@@ -2,6 +2,7 @@ package eventqueue
 
 import (
 	"github.com/bbdLe/iGame/comm/pipe"
+	"github.com/bbdLe/iGame/comm/session"
 	"log"
 	"sync"
 )
@@ -85,4 +86,20 @@ func (q *eventQueue) safeCall(cb func()) {
 	}()
 
 	cb()
+}
+
+func SessionCall(sess session.Session, cb func()) {
+	q := sess.Peer().(interface {
+		Queue() EventQueue
+	}).Queue()
+
+	QueueCall(q, cb)
+}
+
+func QueueCall(q EventQueue, cb func()) {
+	if q == nil {
+		cb()
+	} else {
+		q.Post(cb)
+	}
 }
