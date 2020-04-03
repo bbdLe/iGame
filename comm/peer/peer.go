@@ -7,3 +7,11 @@ type Peer interface {
 
 	TypeName() string
 }
+
+type ContextSet interface {
+	SetContext(key interface{}, value interface{})
+
+	GetContext(key interface{}) (value interface{}, exist bool)
+
+	FetchContext(key interface{}, valuePtr interface{}) (bool)
+}
