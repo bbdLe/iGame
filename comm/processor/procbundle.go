@@ -45,3 +45,7 @@ func (self MultHooker) OnOutboundEvent(input Event) Event {
 
 	return input
 }
+
+func NewMultiHooker(h ...EventHooker) MultHooker {
+	return MultHooker(h)
+}
