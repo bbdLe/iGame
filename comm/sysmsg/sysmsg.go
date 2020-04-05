@@ -1,5 +1,7 @@
 package sysmsg
 
+import "fmt"
+
 type CloseReason int32
 
 const (
@@ -16,4 +18,12 @@ func (self CloseReason) String() string {
 	}
 
 	return "Unknown"
+}
+
+type SessionClose struct {
+	Reason CloseReason
+}
+
+func (self *SessionClose) String() string {
+	return fmt.Sprintf("%+v", *self)
 }

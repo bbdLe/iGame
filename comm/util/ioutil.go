@@ -1,6 +1,9 @@
 package util
 
-import "io"
+import (
+	"io"
+	"net"
+)
 
 func WriteFull(writer io.Writer, data []byte) error {
 	total := len(data)
@@ -15,4 +18,12 @@ func WriteFull(writer io.Writer, data []byte) error {
 	}
 
 	return nil
+}
+
+func IsEOFOrNetReadError(err error) bool {
+	if err == io.EOF {
+		return true
+	}
+	ne, ok := err.(*net.OpError)
+	return ok && ne.Op == "read"
 }
