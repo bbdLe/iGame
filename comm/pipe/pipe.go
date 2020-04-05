@@ -55,3 +55,7 @@ func (p *Pipe) Pick(msgList *[]interface{}) (exit bool) {
 
 	return
 }
+
+func (p *Pipe) Reset() {
+	p.msgList = p.msgList[0:0]
+}
