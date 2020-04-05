@@ -1,6 +1,9 @@
 package peer
 
-import "github.com/bbdLe/iGame/comm/session"
+import (
+	"github.com/bbdLe/iGame/comm/eventqueue"
+	"github.com/bbdLe/iGame/comm/session"
+)
 
 type Peer interface {
 	Start()
@@ -8,6 +11,25 @@ type Peer interface {
 	Stop()
 
 	TypeName() string
+}
+
+type Property interface {
+	Name() string
+
+	Address() string
+
+	Queue() eventqueue.EventQueue
+
+	SetName(string)
+
+	SetAddr(string)
+
+	SetQueue(eventqueue.EventQueue)
+}
+
+type GenericPeer interface {
+	Peer
+	Property
 }
 
 type ContextSet interface {
@@ -26,4 +48,14 @@ type SessionAccessor interface {
 	SessionCount() int
 
 	CloseAllSession()
+}
+
+type ReadyChecker interface {
+	IsReady() bool
+}
+
+type CaptureIOPanic interface {
+	EnableCaptureIOPanic(v bool)
+
+	CaptureIOPanic() bool
 }
