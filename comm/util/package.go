@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/bbdLe/iGame/comm/codec"
 	"github.com/bbdLe/iGame/comm/meta"
+	"github.com/bbdLe/iGame/comm/peer"
 	"github.com/bbdLe/iGame/comm/session"
 	"io"
 )
@@ -56,7 +57,7 @@ func RecvLTVPacket(reader io.Reader, maxPacketSize uint16) (interface{}, error) 
 	return msg, nil
 }
 
-func SendLTVPacket(writer io.Writer, msg interface{})  error {
+func SendLTVPacket(writer io.Writer, ctx peer.ContextSet, msg interface{})  error {
 	var (
 		msgData []byte
 		msgID int
@@ -69,7 +70,7 @@ func SendLTVPacket(writer io.Writer, msg interface{})  error {
 		msgID = m.MsgID
 	default:
 		var err error
-		msgData, meta, err = codec.EncodeMessage(msg, nil)
+		msgData, meta, err = codec.EncodeMessage(msg, ctx)
 		if err != nil {
 			return err
 		}
@@ -82,7 +83,7 @@ func SendLTVPacket(writer io.Writer, msg interface{})  error {
 	// Length
 	binary.LittleEndian.PutUint16(pkg, uint16(msgIdSize + len(msgData)))
 	// Type
-	binary.LittleEndian.PutUint16(pkg[bodySize:], uint16(meta.MsgId))
+	binary.LittleEndian.PutUint16(pkg[bodySize:], uint16(msgID))
 	// Data
 	copy(pkg[bodySize + msgIdSize:], msgData)
 
