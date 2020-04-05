@@ -1,5 +1,7 @@
 package peer
 
+import "github.com/bbdLe/iGame/comm/session"
+
 type Peer interface {
 	Start()
 
@@ -14,4 +16,14 @@ type ContextSet interface {
 	GetContext(key interface{}) (value interface{}, exist bool)
 
 	FetchContext(key interface{}, valuePtr interface{}) (bool)
+}
+
+type SessionAccessor interface {
+	GetSession(int64) session.Session
+
+	VisitSession(func(session.Session) bool)
+
+	SessionCount() int
+
+	CloseAllSession()
 }
