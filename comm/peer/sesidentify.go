@@ -1,13 +1,13 @@
 package peer
 
-type SessionIdentify struct {
+type CoreSessionIdentify struct {
 	id int64
 }
 
-func (self *SessionIdentify) SetID(pId int64) {
+func (self *CoreSessionIdentify) SetID(pId int64) {
 	self.id = pId
 }
 
-func (self *SessionIdentify) GetID() int64 {
+func (self *CoreSessionIdentify) ID() int64 {
 	return self.id
 }
