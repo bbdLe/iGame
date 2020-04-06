@@ -31,7 +31,7 @@ func RecvLTVPacket(reader io.Reader, maxPacketSize int) (interface{}, error) {
 
 	pkgSize := binary.LittleEndian.Uint16(sizeBuf)
 	// 包太大
-	if int(pkgSize) > maxPacketSize {
+	if maxPacketSize > 0 && int(pkgSize) > maxPacketSize {
 		return nil, ErrMaxPacket
 	}
 
