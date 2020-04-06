@@ -2,7 +2,7 @@ package processor
 
 import (
 	"fmt"
-	"github.com/bbdLe/iGame/comm/peer"
+	"github.com/bbdLe/iGame/comm"
 )
 
 type ProcessorBinder func(bundle ProcessorBundle, cb EventCallback, args ...interface{})
@@ -32,7 +32,7 @@ func GetProcessorList() []string {
 	return names
 }
 
-func BindProcessorHandler(peer peer.Peer, procName string, cb EventCallback, args ...interface{}) {
+func BindProcessorHandler(peer comm.Peer, procName string, cb EventCallback, args ...interface{}) {
 	if proc, ok := procByName[procName]; ok {
 		bundle := peer.(ProcessorBundle)
 		proc(bundle, cb, args)

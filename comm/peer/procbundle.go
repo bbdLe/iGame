@@ -1,9 +1,9 @@
 package peer
 
 import (
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/err"
 	"github.com/bbdLe/iGame/comm/processor"
-	"github.com/bbdLe/iGame/comm/session"
 )
 
 var (
@@ -32,7 +32,7 @@ func (self *CoreProcBundle) GetBundle() *CoreProcBundle {
 	return self
 }
 
-func (self *CoreProcBundle) ReadMessage(sess session.Session) (msg interface{}, err error) {
+func (self *CoreProcBundle) ReadMessage(sess comm.Session) (msg interface{}, err error) {
 	if self.transmit != nil {
 		return self.transmit.OnRecvMessage(sess)
 	} else {

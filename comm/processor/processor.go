@@ -1,17 +1,19 @@
 package processor
 
-import "github.com/bbdLe/iGame/comm/session"
+import (
+	"github.com/bbdLe/iGame/comm"
+)
 
 type Event interface {
-	Session() session.Session
+	Session() comm.Session
 
 	Message() interface{}
 }
 
 type MessageTransmitter interface {
-	OnRecvMessage(sess session.Session) (data interface{}, err error)
+	OnRecvMessage(sess comm.Session) (data interface{}, err error)
 
-	OnSendMessage(sess session.Session, data interface{}) error
+	OnSendMessage(sess comm.Session, data interface{}) error
 }
 
 type EventHooker interface {

@@ -1,18 +1,20 @@
 package peer
 
-import "github.com/bbdLe/iGame/comm/eventqueue"
+import (
+	"github.com/bbdLe/iGame/comm"
+)
 
 type CorePeerProperty struct {
-	name string
-	queue eventqueue.EventQueue
-	addr string
+	name  string
+	queue comm.EventQueue
+	addr  string
 }
 
 func (self *CorePeerProperty) Name() string {
 	return self.name
 }
 
-func (self *CorePeerProperty) Queue() eventqueue.EventQueue {
+func (self *CorePeerProperty) Queue() comm.EventQueue {
 	return self.queue
 }
 
@@ -24,7 +26,7 @@ func (self *CorePeerProperty) SetName(v string) {
 	self.name = v
 }
 
-func (self *CorePeerProperty) SetQueue(v eventqueue.EventQueue) {
+func (self *CorePeerProperty) SetQueue(v comm.EventQueue) {
 	self.queue = v
 }
 

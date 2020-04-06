@@ -3,10 +3,8 @@ package util
 import (
 	"encoding/binary"
 	"errors"
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/codec"
-	"github.com/bbdLe/iGame/comm/meta"
-	"github.com/bbdLe/iGame/comm/peer"
-	"github.com/bbdLe/iGame/comm/session"
 	"io"
 )
 
@@ -57,15 +55,15 @@ func RecvLTVPacket(reader io.Reader, maxPacketSize int) (interface{}, error) {
 	return msg, nil
 }
 
-func SendLTVPacket(writer io.Writer, ctx peer.ContextSet, msg interface{})  error {
+func SendLTVPacket(writer io.Writer, ctx comm.ContextSet, msg interface{})  error {
 	var (
 		msgData []byte
 		msgID int
-		meta *meta.MessageMeta
+		meta *comm.MessageMeta
 	)
 
 	switch m := msg.(type) {
-	case *session.RawPacket:
+	case *comm.RawPacket:
 		msgData = m.Data
 		msgID = m.MsgID
 	default:

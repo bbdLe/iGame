@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/event"
 	"github.com/bbdLe/iGame/comm/peer"
 	"github.com/bbdLe/iGame/comm/pipe"
@@ -18,7 +19,7 @@ type tcpSession struct {
 	peer.CoreSessionIdentify
 	*peer.CoreProcBundle
 
-	pInterface peer.Peer
+	pInterface comm.Peer
 
 	conn net.Conn
 	connGuard sync.RWMutex
@@ -49,7 +50,7 @@ func (self *tcpSession) Conn() net.Conn {
 	return self.conn
 }
 
-func (self *tcpSession) Peer() peer.Peer {
+func (self *tcpSession) Peer() comm.Peer {
 	return self.pInterface
 }
 
@@ -102,7 +103,7 @@ func (self *tcpSession) ProtectedReadMessage() (msg interface{}, err error) {
 func (self *tcpSession) recvLoop() {
 	var capturePanic bool
 
-	if i, ok := self.Peer().(peer.CaptureIOPanic); ok {
+	if i, ok := self.Peer().(comm.CaptureIOPanic); ok {
 		capturePanic = i.CaptureIOPanic()
 	}
 
@@ -186,7 +187,7 @@ func (self *tcpSession) Start() {
 	self.sendLoop()
 }
 
-func newSession(conn net.Conn, p peer.Peer, endNotify func()) *tcpSession {
+func newSession(conn net.Conn, p comm.Peer, endNotify func()) *tcpSession {
 	self := &tcpSession{
 		conn: conn,
 		endNotify: endNotify,

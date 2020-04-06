@@ -1,9 +1,11 @@
 package event
 
-import "github.com/bbdLe/iGame/comm/session"
+import (
+	"github.com/bbdLe/iGame/comm"
+)
 
 type RecvMsgEvent struct {
-	Ses session.Session
+	Ses comm.Session
 	Msg interface{}
 }
 
@@ -12,11 +14,11 @@ type ReplyEvent interface {
 }
 
 type SendMsgEvent struct {
-	Ses session.Session
+	Ses comm.Session
 	Msg interface{}
 }
 
-func (self *RecvMsgEvent) Session() session.Session {
+func (self *RecvMsgEvent) Session() comm.Session {
 	return self.Ses
 }
 
@@ -32,7 +34,7 @@ func (self *RecvMsgEvent) Reply(msg interface{}) {
 	self.Session().Send(msg)
 }
 
-func (self *SendMsgEvent) Session() session.Session {
+func (self *SendMsgEvent) Session() comm.Session {
 	return self.Ses
 }
 

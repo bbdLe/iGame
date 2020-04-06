@@ -1,9 +1,9 @@
 package tcp
 
 import (
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/event"
 	"github.com/bbdLe/iGame/comm/peer"
-	"github.com/bbdLe/iGame/comm/session"
 	"github.com/bbdLe/iGame/comm/sysmsg"
 	"log"
 	"net"
@@ -35,7 +35,7 @@ func (self *tcpConnector) ReconnectDuration() time.Duration {
 	return self.reconDuration
 }
 
-func (self *tcpConnector) Session() session.Session {
+func (self *tcpConnector) Session() comm.Session {
 	return self.ses
 }
 
@@ -140,7 +140,7 @@ func (self *tcpConnector) IsReady() bool {
 }
 
 func init() {
-	peer.RegPeerCreateor(func() peer.Peer {
+	peer.RegPeerCreateor(func() comm.Peer {
 		self := &tcpConnector{
 			SessionManager: new(peer.CoreSessionManager),
 		}

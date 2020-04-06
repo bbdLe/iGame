@@ -1,13 +1,12 @@
 package codec
 
 import (
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/err"
-	"github.com/bbdLe/iGame/comm/meta"
-	"github.com/bbdLe/iGame/comm/peer"
 )
 
-func DecodeMessage(msgId int, data []byte) (interface{}, *meta.MessageMeta, error) {
-	meta := meta.MessageMetaByID(msgId)
+func DecodeMessage(msgId int, data []byte) (interface{}, *comm.MessageMeta, error) {
+	meta := comm.MessageMetaByID(msgId)
 	if meta == nil {
 		return nil, nil, err.NewErrorContext("MsgId not exist", msgId)
 	}
@@ -20,8 +19,8 @@ func DecodeMessage(msgId int, data []byte) (interface{}, *meta.MessageMeta, erro
 	return val, meta, nil
 }
 
-func EncodeMessage(msg interface{}, ctx peer.ContextSet) ([]byte, *meta.MessageMeta, error) {
-	meta := meta.MessageMetaByMsg(msg)
+func EncodeMessage(msg interface{}, ctx comm.ContextSet) ([]byte, *comm.MessageMeta, error) {
+	meta := comm.MessageMetaByMsg(msg)
 	if meta == nil {
 		return nil, nil, err.NewErrorContext("Msg Type not exist", ctx)
 	}

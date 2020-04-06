@@ -1,12 +1,15 @@
 package codec
 
-import "github.com/bbdLe/iGame/comm/err"
-
-var (
-	registedCodeccs []Codec
+import (
+	"github.com/bbdLe/iGame/comm"
+	"github.com/bbdLe/iGame/comm/err"
 )
 
-func RegisterCodec(c Codec) {
+var (
+	registedCodeccs []comm.Codec
+)
+
+func RegisterCodec(c comm.Codec) {
 	if GetCodec(c.Name()) != nil {
 		panic(err.NewError("duplicate codec :" + c.Name()))
 	}
@@ -14,7 +17,7 @@ func RegisterCodec(c Codec) {
 	registedCodeccs = append(registedCodeccs, c)
 }
 
-func GetCodec(name string) Codec {
+func GetCodec(name string) comm.Codec {
 	for _, c := range registedCodeccs {
 		if c.Name() == name {
 			return c
@@ -24,7 +27,7 @@ func GetCodec(name string) Codec {
 	return nil
 }
 
-func MustGetCodec(name string) Codec {
+func MustGetCodec(name string) comm.Codec {
 	c := GetCodec(name)
 	if c == nil {
 		panic(err.NewError("Get Codec fail :" + name))

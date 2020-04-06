@@ -1,9 +1,4 @@
-package peer
-
-import (
-	"github.com/bbdLe/iGame/comm/eventqueue"
-	"github.com/bbdLe/iGame/comm/session"
-)
+package comm
 
 type Peer interface {
 	Start()
@@ -18,13 +13,13 @@ type Property interface {
 
 	Address() string
 
-	Queue() eventqueue.EventQueue
+	Queue() EventQueue
 
 	SetName(string)
 
 	SetAddress(string)
 
-	SetQueue(eventqueue.EventQueue)
+	SetQueue(EventQueue)
 }
 
 type GenericPeer interface {
@@ -41,9 +36,9 @@ type ContextSet interface {
 }
 
 type SessionAccessor interface {
-	GetSession(int64) session.Session
+	GetSession(int64) Session
 
-	VisitSession(func(session.Session) bool)
+	VisitSession(func(Session) bool)
 
 	SessionCount() int
 

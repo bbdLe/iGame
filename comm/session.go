@@ -1,14 +1,9 @@
-package session
-
-import (
-	"github.com/bbdLe/iGame/comm/meta"
-	"github.com/bbdLe/iGame/comm/peer"
-)
+package comm
 
 type Session interface {
 	Raw() interface{}
 
-	Peer() peer.Peer
+	Peer() Peer
 
 	Send(msg interface{})
 
@@ -27,7 +22,7 @@ func (self *RawPacket) Message() interface{} {
 		return struct{}{}
 	}
 
-	meta := meta.MessageMetaByID(self.MsgID)
+	meta := MessageMetaByID(self.MsgID)
 	if meta == nil {
 		return struct{}{}
 	}

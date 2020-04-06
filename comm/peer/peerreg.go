@@ -1,8 +1,11 @@
 package peer
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/bbdLe/iGame/comm"
+)
 
-type PeerCreateFunc func() Peer
+type PeerCreateFunc func() comm.Peer
 
 var (
 	peerMap = make(map[string]PeerCreateFunc)
@@ -13,7 +16,7 @@ func RegPeerCreateor(f PeerCreateFunc) {
 	peerMap[t.TypeName()] = f
 }
 
-func NewPeer(name string) Peer {
+func NewPeer(name string) comm.Peer {
 	if f, ok := peerMap[name]; ok {
 		return f()
 	} else {
@@ -29,4 +32,14 @@ func GetPeerCreateorList() []string {
 	}
 
 	return l
+}
+
+func NewGenericPeer(peerType, name, addr string, q comm.EventQueue) comm.GenericPeer {
+	p := NewPeer(peerType)
+	gp := p.(comm.GenericPeer)
+	gp.SetName(name)
+	gp.SetAddress(addr)
+	gp.SetQueue(q)
+
+	return gp
 }

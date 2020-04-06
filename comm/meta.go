@@ -1,8 +1,7 @@
-package meta
+package comm
 
 import (
 	"fmt"
-	codec "github.com/bbdLe/iGame/comm/codec"
 	"reflect"
 	"strings"
 	"sync"
@@ -26,8 +25,8 @@ type context struct {
 }
 
 type MessageMeta struct {
-	Codec codec.Codec
-	Type reflect.Type
+	Codec Codec
+	Type  reflect.Type
 	MsgId int
 
 	ctxGuard sync.Mutex

@@ -1,16 +1,16 @@
 package peer
 
 import (
-	"github.com/bbdLe/iGame/comm/session"
+	"github.com/bbdLe/iGame/comm"
 	"sync"
 	"sync/atomic"
 )
 
 type SessionManager interface {
-	SessionAccessor
+	comm.SessionAccessor
 
-	Add(session.Session)
-	Remove(session.Session)
+	Add(comm.Session)
+	Remove(comm.Session)
 	Count() int
 
 	SetIDBase(base int64)
@@ -30,7 +30,7 @@ func (self *CoreSessionManager) Count() int {
 	return int(atomic.LoadInt64(&self.count))
 }
 
-func (self *CoreSessionManager) Add(sess session.Session) {
+func (self *CoreSessionManager) Add(sess comm.Session) {
 	id := atomic.AddInt64(&self.count, 1)
 	atomic.AddInt64(&self.count, 1)
 
@@ -41,27 +41,27 @@ func (self *CoreSessionManager) Add(sess session.Session) {
 	self.sesById.Store(sess.ID(), sess)
 }
 
-func (self *CoreSessionManager) Remove(sess session.Session) {
+func (self *CoreSessionManager) Remove(sess comm.Session) {
 	atomic.AddInt64(&self.count, -1)
 	self.sesById.Delete(sess.ID())
 }
 
-func (self *CoreSessionManager) GetSession(id int64) session.Session {
+func (self *CoreSessionManager) GetSession(id int64) comm.Session {
 	if v, ok := self.sesById.Load(id); ok {
-		return v.(session.Session)
+		return v.(comm.Session)
 	}
 
 	return nil
 }
 
-func (self *CoreSessionManager) VisitSession(cb func(session.Session) bool) {
+func (self *CoreSessionManager) VisitSession(cb func(comm.Session) bool) {
 	self.sesById.Range(func(key, value interface{}) bool {
-		return cb(value.(session.Session))
+		return cb(value.(comm.Session))
 	})
 }
 
 func (self *CoreSessionManager) CloseAllSession() {
-	self.VisitSession(func(sess session.Session) bool {
+	self.VisitSession(func(sess comm.Session) bool {
 		sess.Close()
 		return true
 	})

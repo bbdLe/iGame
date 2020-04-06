@@ -1,8 +1,7 @@
-package eventqueue
+package comm
 
 import (
 	"github.com/bbdLe/iGame/comm/pipe"
-	"github.com/bbdLe/iGame/comm/session"
 	"log"
 	"sync"
 )
@@ -88,7 +87,7 @@ func (q *eventQueue) safeCall(cb func()) {
 	cb()
 }
 
-func SessionCall(sess session.Session, cb func()) {
+func SessionCall(sess Session, cb func()) {
 	q := sess.Peer().(interface {
 		Queue() EventQueue
 	}).Queue()

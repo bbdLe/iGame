@@ -1,8 +1,8 @@
 package gogopb
 
 import (
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/codec"
-	"github.com/bbdLe/iGame/comm/peer"
 	"github.com/gogo/protobuf/proto"
 )
 
@@ -16,7 +16,7 @@ func (self *gogopbCodec) MimeType() string {
 	return "appplication/x-protobuf"
 }
 
-func (self *gogopbCodec) Encode(msgObj interface{}, ctx peer.ContextSet) (data interface{}, err error) {
+func (self *gogopbCodec) Encode(msgObj interface{}, ctx comm.ContextSet) (data interface{}, err error) {
 	return proto.Marshal(msgObj.(proto.Message))
 }
 

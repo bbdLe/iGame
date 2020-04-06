@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/event"
 	"github.com/bbdLe/iGame/comm/peer"
 	"github.com/bbdLe/iGame/comm/sysmsg"
@@ -110,7 +111,7 @@ func (self *tcpAcceptor) onNewSession(conn net.Conn) {
 }
 
 func init() {
-	peer.RegPeerCreateor(func() peer.Peer {
+	peer.RegPeerCreateor(func() comm.Peer {
 		p := &tcpAcceptor{
 			SessionManager : new(peer.CoreSessionManager),
 		}

@@ -1,6 +1,8 @@
 package processor
 
-import "github.com/bbdLe/iGame/comm/eventqueue"
+import (
+	"github.com/bbdLe/iGame/comm"
+)
 
 type ProcessorBundle interface {
 	SetTransmitter(mt MessageTransmitter)
@@ -16,7 +18,7 @@ func NewQueueEventCallback(cb EventCallback) EventCallback {
 			return
 		}
 
-		eventqueue.SessionCall(ev.Session(), func() {
+		comm.SessionCall(ev.Session(), func() {
 			cb(ev)
 		})
 	}

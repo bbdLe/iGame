@@ -1,7 +1,7 @@
 package peer
 
 import (
-	"github.com/bbdLe/iGame/comm/session"
+	"github.com/bbdLe/iGame/comm"
 	"time"
 )
 
@@ -14,14 +14,14 @@ type TCPSocketOption interface {
 }
 
 type TCPConnector interface {
-	GenericPeer
+	comm.GenericPeer
 	TCPSocketOption
 
 	SetReconnectDuration(time.Duration)
 
 	ReconnectDuration() time.Duration
 
-	Session() session.Session
+	Session() comm.Session
 
 	SetSessionManager(raw interface{})
 

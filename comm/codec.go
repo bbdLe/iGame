@@ -1,11 +1,9 @@
-package codec
-
-import "github.com/bbdLe/iGame/comm/peer"
+package comm
 
 // 编解码接口
 type Codec interface {
 	// 编码
-	Encode(msgObj interface{}, ctx peer.ContextSet) (data interface{}, err error)
+	Encode(msgObj interface{}, ctx ContextSet) (data interface{}, err error)
 
 	// 解码
 	Decode(data interface{}, msgObj interface{}) error

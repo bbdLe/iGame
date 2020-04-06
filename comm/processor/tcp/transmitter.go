@@ -1,8 +1,7 @@
 package tcp
 
 import (
-	"github.com/bbdLe/iGame/comm/peer"
-	"github.com/bbdLe/iGame/comm/session"
+	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/util"
 	"io"
 	"net"
@@ -17,7 +16,7 @@ type socketOpt interface {
 	ApplySocketWriteTimeout(conn net.Conn, cb func())
 }
 
-func (TCPMessageTransmitter) OnRecvMessage(sess session.Session) (msg interface{}, err error) {
+func (TCPMessageTransmitter) OnRecvMessage(sess comm.Session) (msg interface{}, err error) {
 	reader, ok := sess.Raw().(io.Reader)
 	if !ok || reader == nil {
 		return nil,nil
@@ -33,7 +32,7 @@ func (TCPMessageTransmitter) OnRecvMessage(sess session.Session) (msg interface{
 	return
 }
 
-func (TCPMessageTransmitter) OnSendMessage(sess session.Session, msg interface{}) (err error) {
+func (TCPMessageTransmitter) OnSendMessage(sess comm.Session, msg interface{}) (err error) {
 	writer, ok := sess.Raw().(io.Writer)
 	if !ok || writer == nil {
 		return nil
@@ -42,7 +41,7 @@ func (TCPMessageTransmitter) OnSendMessage(sess session.Session, msg interface{}
 	opt := sess.Peer().(socketOpt)
 	if conn, ok := writer.(net.Conn); ok {
 		opt.ApplySocketWriteTimeout(conn, func() {
-			err = util.SendLTVPacket(writer, sess.(peer.ContextSet), msg)
+			err = util.SendLTVPacket(writer, sess.(comm.ContextSet), msg)
 		})
 	}
 

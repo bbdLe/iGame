@@ -2,7 +2,7 @@ package processor
 
 import (
 	"fmt"
-	"github.com/bbdLe/iGame/comm/meta"
+	"github.com/bbdLe/iGame/comm"
 	"reflect"
 	"sync"
 )
@@ -32,7 +32,7 @@ func (self *MessageDispatcher) OnEvent(ev Event) {
 }
 
 func (self *MessageDispatcher) Exist(name string) bool {
-	m := meta.MessageMetaByFullName(name)
+	m := comm.MessageMetaByFullName(name)
 	if m == nil {
 		return false
 	}
@@ -45,7 +45,7 @@ func (self *MessageDispatcher) Exist(name string) bool {
 }
 
 func (self *MessageDispatcher) RegisterMessage(name string, cb EventCallback) {
-	m := meta.MessageMetaByFullName(name)
+	m := comm.MessageMetaByFullName(name)
 	if m == nil {
 		panic(fmt.Errorf("Can't Find meta : %s", name))
 	}
