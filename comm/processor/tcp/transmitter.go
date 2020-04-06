@@ -12,7 +12,7 @@ type TCPMessageTransmitter struct {
 }
 
 type socketOpt interface {
-	MaxPacketSize() uint16
+	MaxPacketSize() int
 	ApplySocketReadTimeout(conn net.Conn, cb func())
 	ApplySocketWriteTimeout(conn net.Conn, cb func())
 }

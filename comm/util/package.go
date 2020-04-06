@@ -21,7 +21,7 @@ const (
 	msgIdSize = 2
 )
 
-func RecvLTVPacket(reader io.Reader, maxPacketSize uint16) (interface{}, error) {
+func RecvLTVPacket(reader io.Reader, maxPacketSize int) (interface{}, error) {
 	var sizeBuf = make([]byte, bodySize)
 	n, err := io.ReadFull(reader, sizeBuf)
 	if err != nil {
@@ -33,7 +33,7 @@ func RecvLTVPacket(reader io.Reader, maxPacketSize uint16) (interface{}, error) 
 
 	pkgSize := binary.LittleEndian.Uint16(sizeBuf)
 	// 包太大
-	if pkgSize > maxPacketSize {
+	if int(pkgSize) > maxPacketSize {
 		return nil, ErrMaxPacket
 	}
 
