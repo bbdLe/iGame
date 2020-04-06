@@ -27,3 +27,9 @@ type SessionClose struct {
 func (self *SessionClose) String() string {
 	return fmt.Sprintf("%+v", *self)
 }
+
+type SessionConnectError struct {}
+type SessionConnected struct {}
+
+func (self *SessionConnectError) String() string { return fmt.Sprintf("%+v", *self)}
+func (self *SessionConnected) String() string { return fmt.Sprintf("%+v", *self)}
