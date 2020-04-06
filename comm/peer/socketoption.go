@@ -67,3 +67,8 @@ func (self *CoreTcpSocketOption) ApplySocketWriteTimeout(conn net.Conn, cb func(
 		cb()
 	}
 }
+
+func (self *CoreTcpSocketOption) Init() {
+	self.writeBufferSize = -1
+	self.readBufferSize = -1
+}

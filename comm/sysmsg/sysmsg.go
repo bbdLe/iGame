@@ -30,6 +30,8 @@ func (self *SessionClose) String() string {
 
 type SessionConnectError struct {}
 type SessionConnected struct {}
+type SessionAccepted struct {}
 
 func (self *SessionConnectError) String() string { return fmt.Sprintf("%+v", *self)}
 func (self *SessionConnected) String() string { return fmt.Sprintf("%+v", *self)}
+func (self *SessionAccepted) String() string { return fmt.Sprintf("%+v", *self)}
