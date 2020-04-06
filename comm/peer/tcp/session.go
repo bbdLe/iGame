@@ -119,7 +119,7 @@ func (self *tcpSession) recvLoop() {
 
 		if err != nil {
 			if !util.IsEOFOrNetReadError(err) {
-				log.Println("session closed, sesid : %d, err := %s", self.ID(), err)
+				log.Printf("session closed, sesid : %d, err := %s", self.ID(), err)
 			}
 
 			self.sendQueue.Add(nil)
@@ -181,10 +181,10 @@ func (self *tcpSession) Start() {
 	}()
 
 	// 接收协程
-	self.recvLoop()
+	go self.recvLoop()
 
 	// 发送协程
-	self.sendLoop()
+	go self.sendLoop()
 }
 
 func newSession(conn net.Conn, p comm.Peer, endNotify func()) *tcpSession {
