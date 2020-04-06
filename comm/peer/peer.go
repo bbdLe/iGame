@@ -22,7 +22,7 @@ type Property interface {
 
 	SetName(string)
 
-	SetAddr(string)
+	SetAddress(string)
 
 	SetQueue(eventqueue.EventQueue)
 }
