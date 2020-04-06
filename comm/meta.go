@@ -120,7 +120,7 @@ func RegMessageMeta(meta *MessageMeta) {
 		metaByFullName[meta.FullName()] = meta
 	}
 
-	if _, ok := metaByID[meta.MsgId]; !ok {
+	if _, ok := metaByID[meta.MsgId]; ok {
 		panic(fmt.Errorf("msgid %d already exist", meta.MsgId))
 	} else {
 		metaByID[meta.MsgId] = meta
