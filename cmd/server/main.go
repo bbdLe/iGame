@@ -10,19 +10,20 @@ import (
 	"github.com/bbdLe/iGame/comm/processor"
 	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 	"github.com/bbdLe/iGame/comm/sysmsg"
+	"github.com/bbdLe/iGame/comm/util"
 	"log"
 	"reflect"
 )
 
 func init() {
 	comm.RegMessageMeta(&comm.MessageMeta{
-		MsgId: 1,
+		MsgId: int(util.StringHash("cmd.CalReq")),
 		Type: reflect.TypeOf((*cmd.CalReq)(nil)).Elem(),
 		Codec: codec.MustGetCodec("gogopb"),
 	})
 
 	comm.RegMessageMeta(&comm.MessageMeta{
-		MsgId: 2,
+		MsgId: int(util.StringHash("cmd.CalRes")),
 		Type: reflect.TypeOf((*cmd.CalRes)(nil)).Elem(),
 		Codec: codec.MustGetCodec("gogopb"),
 	})
@@ -38,10 +39,8 @@ func main() {
 		switch msg := ev.Message().(type) {
 		case *sysmsg.SessionAccepted:
 			log.Println("client connect")
-			log.Println("Session Cnt:", p.(peer.SessionManager).SessionCount())
 		case *sysmsg.SessionClose:
 			log.Println("client disconnect")
-			log.Println("Session Cnt:", p.(peer.SessionManager).SessionCount())
 		case *cmd.CalReq:
 			var reply cmd.CalRes
 			reply.Result = msg.GetA() + msg.GetB()
