@@ -147,7 +147,10 @@ func (self *tcpSession) sendLoop() {
 		exit := self.sendQueue.Pick(&writeList)
 
 		for _, msg := range writeList {
-			self.SendMessage(&event.SendMsgEvent{Msg : msg, Ses : self})
+			err := self.SendMessage(&event.SendMsgEvent{Msg : msg, Ses : self})
+			if err != nil {
+				log.Println("Send Message fail, err :", err)
+			}
 		}
 
 		if exit {
