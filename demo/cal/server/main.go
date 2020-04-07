@@ -1,33 +1,16 @@
 package main
 
 import (
-	"github.com/bbdLe/iGame/cmd"
 	"github.com/bbdLe/iGame/comm"
-	"github.com/bbdLe/iGame/comm/codec"
-	_ "github.com/bbdLe/iGame/comm/codec/gogopb"
 	"github.com/bbdLe/iGame/comm/peer"
-	_ "github.com/bbdLe/iGame/comm/peer/tcp"
 	"github.com/bbdLe/iGame/comm/processor"
-	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 	"github.com/bbdLe/iGame/comm/sysmsg"
-	"github.com/bbdLe/iGame/comm/util"
+	"github.com/bbdLe/iGame/demo/cal/proto"
 	"log"
-	"reflect"
+
+	_ "github.com/bbdLe/iGame/comm/peer/tcp"
+	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 )
-
-func init() {
-	comm.RegMessageMeta(&comm.MessageMeta{
-		MsgId: int(util.StringHash("cmd.CalReq")),
-		Type: reflect.TypeOf((*cmd.CalReq)(nil)).Elem(),
-		Codec: codec.MustGetCodec("gogopb"),
-	})
-
-	comm.RegMessageMeta(&comm.MessageMeta{
-		MsgId: int(util.StringHash("cmd.CalRes")),
-		Type: reflect.TypeOf((*cmd.CalRes)(nil)).Elem(),
-		Codec: codec.MustGetCodec("gogopb"),
-	})
-}
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Llongfile)
@@ -40,8 +23,8 @@ func main() {
 			log.Println("client connect")
 		case *sysmsg.SessionClose:
 			log.Println("client disconnect")
-		case *cmd.CalReq:
-			var reply cmd.CalRes
+		case *proto.CalReq:
+			var reply proto.CalRes
 			reply.Result = msg.GetA() + msg.GetB()
 			ev.Session().Send(&reply)
 		}

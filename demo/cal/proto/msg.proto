@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cmd;
+package proto;
 
 message CalReq {
     int32 a = 1;
