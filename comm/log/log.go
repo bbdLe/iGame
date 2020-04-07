@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// for test
 var (
 	Logger *zap.Logger
 )
@@ -52,5 +53,5 @@ func NewLogger(filePath string, level zapcore.Level, maxSize int, maxBackUps int
 }
 
 func init() {
-	Logger = NewLogger("../../log/service.log", zapcore.DebugLevel, 500, 5, 30, true)
+	Logger = NewLogger("../../../log/service.log", zapcore.DebugLevel, 500, 5, 30, true)
 }

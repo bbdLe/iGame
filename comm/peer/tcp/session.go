@@ -29,8 +29,6 @@ type tcpSession struct {
 	// 发送队列
 	sendQueue *pipe.Pipe
 
-	cleanupGuard sync.Mutex
-
 	endNotify func()
 
 	closing int64

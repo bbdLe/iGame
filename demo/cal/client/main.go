@@ -14,26 +14,11 @@ import (
 	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 )
 
-//func init() {
-//	comm.RegMessageMeta(&comm.MessageMeta{
-//		MsgId: int(util.StringHash("cmd.CalReq")),
-//		Type: reflect.TypeOf((*proto.CalReq)(nil)).Elem(),
-//		Codec: codec.MustGetCodec("gogopb"),
-//	})
-//
-//	comm.RegMessageMeta(&comm.MessageMeta{
-//		MsgId: int(util.StringHash("cmd.CalRes")),
-//		Type: reflect.TypeOf((*proto.CalRes)(nil)).Elem(),
-//		Codec: codec.MustGetCodec("gogopb"),
-//	})
-//}
-
 func main() {
 	log.SetFlags(log.LstdFlags | log.Llongfile)
 
 	queue := comm.NewEventQueue()
 	p := peer.NewGenericPeer("tcp.Connector", "clientAsynCallback", "localhost:4444", queue)
-	p.(peer.TCPSocketOption).SetMaxPacketSize(1000)
 	processor.BindProcessorHandler(p, "tcp.ltv", func(ev processor.Event) {
 		switch msg := ev.Message().(type) {
 		case *sysmsg.SessionConnected:
