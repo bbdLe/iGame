@@ -32,7 +32,6 @@ func (self *CoreSessionManager) Count() int {
 
 func (self *CoreSessionManager) Add(sess comm.Session) {
 	id := atomic.AddInt64(&self.count, 1)
-	atomic.AddInt64(&self.count, 1)
 
 	sess.(interface{
 		SetID(int64)
