@@ -1,26 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"github.com/bbdLe/iGame/cmd"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/codec"
+	_ "github.com/bbdLe/iGame/comm/codec/gogopb"
 	"github.com/bbdLe/iGame/comm/peer"
+	_ "github.com/bbdLe/iGame/comm/peer/tcp"
 	"github.com/bbdLe/iGame/comm/processor"
+	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 	"github.com/bbdLe/iGame/comm/sysmsg"
 	"log"
 	"reflect"
-	"time"
-
-	_ "github.com/bbdLe/iGame/comm/codec/gogopb"
-	_ "github.com/bbdLe/iGame/comm/peer/tcp"
-	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 )
 
 func init() {
 	comm.RegMessageMeta(&comm.MessageMeta{
 		MsgId: 1,
-		Type: reflect.TypeOf((*cmd.SearchRequest)(nil)).Elem(),
+		Type: reflect.TypeOf((*cmd.CalReq)(nil)).Elem(),
+		Codec: codec.MustGetCodec("gogopb"),
+	})
+
+	comm.RegMessageMeta(&comm.MessageMeta{
+		MsgId: 2,
+		Type: reflect.TypeOf((*cmd.CalRes)(nil)).Elem(),
 		Codec: codec.MustGetCodec("gogopb"),
 	})
 }
@@ -34,14 +37,21 @@ func main() {
 	processor.BindProcessorHandler(p, "tcp.ltv", func(ev processor.Event) {
 		switch msg := ev.Message().(type) {
 		case *sysmsg.SessionAccepted:
-			fmt.Println("new client", msg)
-		case *cmd.SearchRequest:
-			fmt.Println("recv search request")
-
+			log.Println("client connect")
+			log.Println("Session Cnt:", p.(peer.SessionManager).SessionCount())
+		case *sysmsg.SessionClose:
+			log.Println("client disconnect")
+			log.Println("Session Cnt:", p.(peer.SessionManager).SessionCount())
+		case *cmd.CalReq:
+			var reply cmd.CalRes
+			reply.Result = msg.GetA() + msg.GetB()
+			ev.Session().Send(&reply)
 		}
 	})
 	p.Start()
 	queue.StartLoop()
 
-	time.Sleep(time.Second * 1000)
+	select {
+
+	}
 }
