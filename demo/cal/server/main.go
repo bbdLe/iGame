@@ -34,7 +34,6 @@ func main() {
 
 	queue := comm.NewEventQueue()
 	p := peer.NewGenericPeer("tcp.Acceptor", "server.acceptor", "localhost:4444", queue)
-	p.(peer.TCPSocketOption).SetMaxPacketSize(1000)
 	processor.BindProcessorHandler(p, "tcp.ltv", func(ev processor.Event) {
 		switch msg := ev.Message().(type) {
 		case *sysmsg.SessionAccepted:

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package cmd;
+
+message CalReq {
+    int32 a = 1;
+    int32 b = 2;
+}
+
+message CalRes {
+    int32 result = 1;
+}
