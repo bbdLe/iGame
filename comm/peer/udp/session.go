@@ -1,12 +1,15 @@
 package udp
 
 import (
-	"github.com/bbdLe/iGame/comm"
-	"github.com/bbdLe/iGame/comm/event"
-	"github.com/bbdLe/iGame/comm/peer"
+	"fmt"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/bbdLe/iGame/comm"
+	"github.com/bbdLe/iGame/comm/event"
+	"github.com/bbdLe/iGame/comm/log"
+	"github.com/bbdLe/iGame/comm/peer"
 )
 
 type DataReader interface {
@@ -80,4 +83,20 @@ func (self *udpSession) Close() {
 
 func (self *udpSession) Raw() interface{} {
 	return self
+}
+
+func (self *udpSession) WriteData(data []byte) {
+	if self.conn == nil {
+		return
+	}
+
+	if self.remote == nil {
+		if _, err := self.conn.Write(data); err != nil {
+			log.Logger.Error(fmt.Sprintf("udp write fail: %v", err))
+		}
+	} else {
+		if _, err := self.conn.WriteToUDP(data, self.remote); err != nil {
+			log.Logger.Error(fmt.Sprintf("udp write fail: %v", err))
+		}
+	}
 }
