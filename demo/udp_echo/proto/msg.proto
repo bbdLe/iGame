@@ -1,0 +1,11 @@
+syntax = "proto3";
+package proto;
+
+message EchoReq {
+    string msg = 1;
+}
+
+message EchoRes {
+    string msg = 1;
+    int64 session_id = 2;
+}
