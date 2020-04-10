@@ -99,9 +99,12 @@ func (self *udpAcceptor) CheckTimeoutSession() {
 
 		for _, ses := range sesToDeleteList {
 			delete(self.sesByConnTrack, *ses.key)
+
+			self.CoreSessionManager.Remove(ses)
 		}
 
 		self.sesCleanLastTime = now
+		log.Logger.Debug(fmt.Sprintf("CheckTimeoutSession, now Count : %d", self.CoreSessionManager.Count()))
 	}
 }
 
@@ -116,6 +119,8 @@ func (self *udpAcceptor) getSession(addr *net.UDPAddr) *udpSession {
 		ses.CoreProcBundle = &self.CoreProcBundle
 		ses.key = key
 		self.sesByConnTrack[*key] = ses
+
+		self.CoreSessionManager.Add(ses)
 	}
 
 	ses.timeOutTick = time.Now().Add(self.sesTimeout)

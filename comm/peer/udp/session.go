@@ -23,6 +23,7 @@ type DataWriter interface {
 type udpSession struct {
 	*peer.CoreProcBundle
 	peer.CoreContextSet
+	peer.CoreSessionIdentify
 
 	pInterface comm.Peer
 
@@ -68,7 +69,7 @@ func (self *udpSession) Recv(data []byte) {
 	self.pkg = data
 
 	msg, err := self.ReadMessage(self)
-	if msg != nil && err != nil {
+	if msg != nil && err == nil {
 		self.ProcessEvent(&event.RecvMsgEvent{self, msg})
 	}
 }
@@ -99,4 +100,8 @@ func (self *udpSession) WriteData(data []byte) {
 			log.Logger.Error(fmt.Sprintf("udp write fail: %v", err))
 		}
 	}
+}
+
+func (self *udpSession) ReadData() []byte {
+	return self.pkg
 }
