@@ -120,7 +120,7 @@ func (self *udpAcceptor) getSession(addr *net.UDPAddr) *udpSession {
 		ses.key = key
 		self.sesByConnTrack[*key] = ses
 
-		self.CoreSessionManager.Add(ses)
+		self.Add(ses)
 	}
 
 	ses.timeOutTick = time.Now().Add(self.sesTimeout)

@@ -53,10 +53,6 @@ func (self *udpSession) IsAlive() bool {
 	return time.Now().Before(self.timeOutTick)
 }
 
-func (self *udpSession) ID() int64 {
-	return 0
-}
-
 func (self *udpSession) LocalAddress() net.Addr {
 	return self.conn.LocalAddr()
 }
