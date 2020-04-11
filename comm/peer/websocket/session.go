@@ -90,7 +90,7 @@ func (self *wsSession) sendLoop() {
 		exit := self.sendQueue.Pick(&writeList)
 
 		for _, msg := range writeList {
-			self.ProcessEvent(&event.SendMsgEvent{Ses : self, Msg : msg})
+			self.SendMessage(&event.SendMsgEvent{Ses : self, Msg : msg})
 		}
 
 		if exit {

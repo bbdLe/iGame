@@ -74,7 +74,7 @@ func (self *wsAcceptor) Start() {
 		ses := newSession(c, self, nil)
 		ses.SetContext("request", r)
 		ses.Start()
-		self.ProcessEvent(&event.RecvMsgEvent{Ses: ses, Msg : &sysmsg.SessionConnected{}})
+		self.ProcessEvent(&event.RecvMsgEvent{Ses: ses, Msg : &sysmsg.SessionAccepted{}})
 	})
 
 	self.sv = &http.Server{Addr: self.Address(), Handler : mux}
