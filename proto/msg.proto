@@ -1,0 +1,39 @@
+syntax = "proto3";
+package proto;
+
+enum ProtoID
+{
+    CS_CMD_START = 0;
+    CS_CMD_LOGIN_REQ = 1;
+    CS_CMD_LOGIN_RES = 2;
+    CS_CMD_CHAT_REQ = 3;
+    CS_CMD_CHAT_RES = 4;
+    CS_CMD_VERIFY_REQ = 5;
+    CS_CMD_VERIFY_RES = 6;
+}
+
+//[id:CS_CMD_LOGIN_REQ]
+message LoginReq {
+    string version = 1;
+    string platform = 2;
+    string uid = 3;
+}
+
+// [id:CS_CMD_LOGIN_RES]
+message LoginRes {
+    int32 result = 1;
+    string token = 2;
+    string server_addr = 3;
+}
+
+// [id:CS_CMD_VERIFY_REQ]
+message VerifyReq {
+    string token = 1;
+    string server = 2;
+}
+
+// [id:CS_CMD_VERIFY_RES]
+message VerifyRes {
+    int32 ret_code = 1;
+    string ret_msg = 2;
+}
