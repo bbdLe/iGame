@@ -114,10 +114,10 @@ func RegMessageMeta(meta *MessageMeta) {
 		panic(fmt.Errorf("meta msgid can't be zero"))
 	}
 
-	if _, ok := metaByFullName[meta.FullName()]; ok {
-		panic(fmt.Errorf("meta %s already exist", meta.FullName()))
+	if _, ok := metaByFullName[meta.TypeName()]; ok {
+		panic(fmt.Errorf("meta %s already exist", meta.TypeName()))
 	} else {
-		metaByFullName[meta.FullName()] = meta
+		metaByFullName[meta.TypeName()] = meta
 	}
 
 	if _, ok := metaByID[meta.MsgId]; ok {
