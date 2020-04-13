@@ -11,6 +11,7 @@ import (
 type MessageDispatcher struct {
 	handlerByType map[reflect.Type][]EventCallback
 	handlerGuard sync.RWMutex
+	defaultCallback EventCallback
 }
 
 func (self *MessageDispatcher) OnEvent(ev Event) {
@@ -24,7 +25,10 @@ func (self *MessageDispatcher) OnEvent(ev Event) {
 	self.handlerGuard.RUnlock()
 
 	if !ok {
-		log.Logger.Error(fmt.Sprintf("MsgType %s  handler not exist", pt.String()))
+		log.Logger.Error(fmt.Sprintf("MsgType %s  handler not exist, use default handler", pt.String()))
+		if self.defaultCallback != nil {
+			self.defaultCallback(ev)
+		}
 		return
 	}
 
@@ -58,6 +62,10 @@ func (self *MessageDispatcher) RegisterMessage(name string, cb EventCallback) {
 	handlers, _ := self.handlerByType[m.Type]
 	handlers = append(handlers, cb)
 	self.handlerByType[m.Type] = handlers
+}
+
+func (self *MessageDispatcher) SetDefaultCallback(cb EventCallback) {
+	self.defaultCallback = cb
 }
 
 func NewMessageDispatcher() *MessageDispatcher {

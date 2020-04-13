@@ -8,6 +8,5 @@ var (
 
 func init() {
 	MsgDispatcher = processor.NewMessageDispatcher()
-	MsgDispatcher.RegisterMessage("VerifyReq", ZoneMsgVerify)
-	MsgDispatcher.RegisterMessage("ChatReq", ZoneMsgChat)
+	MsgDispatcher.SetDefaultCallback(ZoneDefaultHanlder)
 }

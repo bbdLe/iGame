@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/bbdLe/iGame/comm/peer"
 
 	"github.com/bbdLe/iGame/app/zone_conn/model"
 	"github.com/bbdLe/iGame/comm"
@@ -24,17 +25,33 @@ func ZoneMsgVerify(ev processor.Event) {
 	})
 }
 
-func ZoneMsgChat(ev processor.Event) {
-	user, ok := ev.Session().(comm.ContextSet).GetContext("user")
+// 默认处理, 处理消息中转
+func ZoneDefaultHanlder(ev processor.Event) {
+	v, ok := ev.Session().(comm.ContextSet).GetContext("user")
 	if !ok {
 		log.Logger.Debug("session don't verify")
 		ev.Session().Close()
-	} else {
-		log.Logger.Debug(fmt.Sprintf("Recv Chat : %s, Server : %s", ev.Message().(*proto.ChatReq).GetContent(), user.(*model.User).ServerId))
+	}
+	user := v.(*model.User)
+
+	meta := comm.MessageMetaByMsg(ev.Message())
+	if meta == nil {
+		log.Logger.Error(fmt.Sprintf("get meta fail : %v", ev.Message()))
+		return
 	}
 
-	ev.Session().Send(&proto.ChatRes{
-		RetCode: 0,
-		RetMsg: "",
-	})
+	data, err := meta.Codec.Encode(ev.Message(), nil)
+	if err != nil {
+		log.Logger.Error(fmt.Sprintf("Codec faild : %v", err))
+		return
+	}
+
+	msg := &proto.TransmitReq{
+		MsgId:  int32(meta.MsgId),
+		MsgData: data.([]byte),
+		ClientId: user.Session.ID(),
+	}
+
+	ZoneSvrConn.(peer.TCPConnector).Session().Send(msg)
+	log.Logger.Debug(fmt.Sprintf("%v", msg))
 }

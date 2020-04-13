@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/bbdLe/iGame/app/client/handler"
@@ -15,41 +14,6 @@ import (
 	_ "github.com/bbdLe/iGame/comm/peer/tcp"
 	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 )
-
-func GetConnAddr() (string, string, error) {
-	var wg sync.WaitGroup
-	wg.Add(1)
-	connAddr := ""
-	token := ""
-
-	q := comm.NewEventQueue()
-	p := peer.NewGenericPeer("tcp.Connector", "client", "localhost:12315", q)
-	processor.BindProcessorHandler(p, "tcp.ltv", func(ev processor.Event) {
-		switch msg := ev.Message().(type) {
-		case *sysmsg.SessionConnected:
-			log.Logger.Debug("session connect")
-			// send login
-			req := &proto.LoginReq{
-				Version: "0.0.1",
-				Platform : "HuaWei",
-				Uid : "sdadasdada",
-			}
-			ev.Session().Send(req)
-		case *proto.LoginRes:
-			connAddr = msg.GetServerAddr()
-			token = msg.GetToken()
-			ev.Session().Close()
-		case *sysmsg.SessionClose:
-			log.Logger.Debug("Session Close")
-			wg.Done()
-		}
-	})
-	q.StartLoop()
-	p.Start()
-
-	wg.Wait()
-	return connAddr, token, nil
-}
 
 func connectConn(addr string, token string) error {
 	var wg sync.WaitGroup
@@ -81,18 +45,5 @@ func connectConn(addr string, token string) error {
 }
 
 func Run() {
-	addr, token, err := GetConnAddr()
-	if err != nil {
-		log.Logger.Error(fmt.Sprintf("GetConnAddr Fail: %s", err))
-		return
-	}
-	log.Logger.Debug(addr)
-	log.Logger.Debug(token)
-	if addr == "" || token == "" {
-		return
-	}
-	err = connectConn(addr, token)
-	if err != nil {
-		log.Logger.Error("connectConn fail")
-	}
+	connectConn("localhost:10086", "token")
 }

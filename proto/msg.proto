@@ -12,6 +12,9 @@ enum ProtoID
     CS_CMD_VERIFY_RES = 6;
     CS_CMD_TRANSMIT_REQ = 7;
     CS_CMD_TRANSMIT_RES = 8;
+    CS_CMD_USER_LOGIN_REQ = 9;
+    CS_CMD_USER_LOGIN_RES = 10;
+    CS_CMD_ROLE_DATA_RES = 11;
 }
 
 //[id:CS_CMD_LOGIN_REQ]
@@ -44,14 +47,14 @@ message VerifyRes {
 message TransmitReq {
     int32 msg_id = 1;
     bytes msg_data = 2;
-    int32 client_id = 3;
+    int64 client_id = 3;
 }
 
 // [id:CS_CMD_TRANSMIT_RES]
 message TransmitRes {
     int32 msg_id = 1;
     bytes msg_data = 2;
-    int32 client_id = 3;
+    int64 client_id = 3;
 }
 
 // [id:CS_CMD_CHAT_REQ ]
@@ -64,3 +67,5 @@ message ChatRes {
     int32 ret_code = 1;
     string ret_msg = 2;
 }
+
+// []

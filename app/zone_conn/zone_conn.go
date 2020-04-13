@@ -1,7 +1,7 @@
 package zone_conn
 
 import (
-	"fmt"
+	"github.com/bbdLe/iGame/proto"
 
 	"github.com/bbdLe/iGame/app/zone_conn/handler"
 	"github.com/bbdLe/iGame/comm"
@@ -14,16 +14,19 @@ import (
 )
 
 func Run() {
+	handler.ConnectBackend()
+
 	q := comm.NewEventQueue()
 	p := peer.NewGenericPeer("tcp.Acceptor", "zone_conn", "localhost:10086", q)
 	processor.BindProcessorHandler(p, "tcp.ltv", func(ev processor.Event) {
 	switch ev.Message().(type) {
-	case *sysmsg.SessionConnected:
+	case *sysmsg.SessionAccepted:
 		log.Logger.Debug("New Session Conn")
 	case *sysmsg.SessionClose:
 		log.Logger.Debug("Session Close")
+	case *proto.VerifyReq:
+		handler.ZoneMsgVerify(ev)
 	default:
-		log.Logger.Debug(fmt.Sprintf("%v", ev.Message()))
 		handler.MsgDispatcher.OnEvent(ev)
 	}
 	})
