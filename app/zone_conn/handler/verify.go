@@ -18,7 +18,7 @@ func ZoneMsgVerify(ev processor.Event) {
 	user := model.NewUser(ev.Session(), msg.GetServer())
 	ev.Session().(comm.ContextSet).SetContext("user", user)
 
-	// 回报
+	// 回包
 	ev.Session().Send(&proto.VerifyRes{
 		RetCode: 0,
 		RetMsg: "",

@@ -2,6 +2,9 @@ package zone_svr
 
 import (
 	"fmt"
+	"github.com/bbdLe/iGame/app/zone_svr/logic"
+	"github.com/bbdLe/iGame/app/zone_svr/player"
+	"github.com/bbdLe/iGame/comm/event"
 
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
@@ -10,6 +13,7 @@ import (
 	"github.com/bbdLe/iGame/comm/sysmsg"
 	"github.com/bbdLe/iGame/proto"
 
+	_ "github.com/bbdLe/iGame/app/zone_svr/logic"
 	_ "github.com/bbdLe/iGame/comm/peer/tcp"
 	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 	_ "github.com/bbdLe/iGame/proto"
@@ -25,9 +29,23 @@ func Run() {
 		case *sysmsg.SessionClose:
 			log.Logger.Debug("zone_conn close")
 		case *proto.TransmitReq:
-
-
-			log.Logger.Debug(fmt.Sprintf("%v", ev.Message()))
+			p, _ := player.GetPlayer(msg.GetClientId())
+			log.Logger.Debug(string(msg.GetMsgData()))
+			meta := comm.MessageMetaByID(int(msg.GetMsgId()))
+			if meta != nil {
+				obj := meta.NewType()
+				err := meta.Codec.Decode(msg.GetMsgData(), obj)
+				if err != nil {
+					return
+				}
+				logic.MsgDispatcher.OnEvent(p, &event.RecvMsgEvent{
+					Ses: ev.Session(),
+					Msg: obj,
+				})
+			} else {
+				log.Logger.Debug("====")
+			}
+			log.Logger.Debug(fmt.Sprintf("%v", msg))
 		default:
 			log.Logger.Debug("test")
 	}

@@ -26,7 +26,7 @@ func ZoneVerifyRes(ev processor.Event) {
 	}
 	log.Logger.Debug(fmt.Sprintf("Recv VerifyRes : %v", msg.GetRetCode()))
 
-	ev.Session().Send(&proto.ChatReq{
-		Content: "Hello, World",
+	ev.Session().Send(&proto.LoginReq{
+		Version: "12345",
 	})
 }
