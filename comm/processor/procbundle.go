@@ -51,3 +51,13 @@ func (self MultHooker) OnOutboundEvent(input Event) Event {
 func NewMultiHooker(h ...EventHooker) MultHooker {
 	return MultHooker(h)
 }
+
+func NewQueuedEventCallback(cb EventCallback) EventCallback {
+	return func(ev Event) {
+		if cb != nil {
+			comm.SessionCall(ev.Session(), func() {
+				cb(ev)
+			})
+		}
+	}
+}
