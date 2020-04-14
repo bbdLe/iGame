@@ -1,4 +1,4 @@
-package player
+package model
 
 type PlayerBaseInfo struct {
 	player *Player

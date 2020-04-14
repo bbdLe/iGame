@@ -3,7 +3,7 @@ package zone_svr
 import (
 	"fmt"
 	"github.com/bbdLe/iGame/app/zone_svr/logic"
-	"github.com/bbdLe/iGame/app/zone_svr/player"
+	"github.com/bbdLe/iGame/app/zone_svr/model"
 	"github.com/bbdLe/iGame/comm/event"
 
 	"github.com/bbdLe/iGame/comm"
@@ -29,23 +29,30 @@ func Run() {
 		case *sysmsg.SessionClose:
 			log.Logger.Debug("zone_conn close")
 		case *proto.TransmitReq:
-			p, _ := player.GetPlayer(msg.GetClientId())
-			log.Logger.Debug(string(msg.GetMsgData()))
+			// 获取玩家
+			p, _ := model.GetPlayer(msg.GetClientId())
+
+			// 获取meta
 			meta := comm.MessageMetaByID(int(msg.GetMsgId()))
-			if meta != nil {
-				obj := meta.NewType()
-				err := meta.Codec.Decode(msg.GetMsgData(), obj)
-				if err != nil {
-					return
-				}
-				logic.MsgDispatcher.OnEvent(p, &event.RecvMsgEvent{
-					Ses: ev.Session(),
-					Msg: obj,
-				})
-			} else {
-				log.Logger.Debug("====")
+			if meta == nil {
+				log.Logger.Debug(fmt.Sprintf("msgid(%d) meta not found", msg.GetMsgId()))
+				break
 			}
-			log.Logger.Debug(fmt.Sprintf("%v", msg))
+
+			// byte -> obj
+			obj := meta.NewType()
+			err := meta.Codec.Decode(msg.GetMsgData(), obj)
+			if err != nil {
+				return
+			}
+
+			// 设置上下文
+			ev.Session().(comm.ContextSet).SetContext("clientID", msg.GetClientId())
+
+			logic.MsgDispatcher.OnEvent(p, &event.RecvMsgEvent{
+				Ses: ev.Session(),
+				Msg: obj,
+			})
 		default:
 			log.Logger.Debug("test")
 	}

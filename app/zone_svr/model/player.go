@@ -1,4 +1,6 @@
-package player
+package model
+
+import "github.com/bbdLe/iGame/comm"
 
 type PlayerCmpt interface {
 	Tick()
@@ -16,6 +18,7 @@ type Player struct {
 	Cmpts []PlayerCmpt
 	SessionID int64
 	Status int32
+	Ses comm.Session
 }
 
 func (self *Player) RegCmpt(m PlayerCmpt) {
@@ -32,9 +35,10 @@ func (self *Player) Tick() {
 	}
 }
 
-func NewPlayer(sessionID int64) *Player {
+func NewPlayer(sessionID int64, ses comm.Session) *Player {
 	self := &Player{
 		SessionID: sessionID,
+		Ses : ses,
 	}
 	self.Init()
 	return self

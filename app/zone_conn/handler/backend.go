@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -27,15 +28,36 @@ func ConnectBackend() {
 	ZoneSvrConn = peer.NewGenericPeer("tcp.Connector", "zone_svr", "localhost:10010", q)
 	ZoneSvrConn.(peer.TCPConnector).SetReconnectDuration(time.Second * 3)
 	processor.BindProcessorHandler(ZoneSvrConn, "tcp.ltv", func(ev processor.Event) {
-		switch ev.Message().(type) {
+		switch msg := ev.Message().(type) {
 		case *sysmsg.SessionConnected:
 			log.Logger.Debug("connect")
 			wg.Done()
 		case *sysmsg.SessionClose:
 			log.Logger.Debug("disconnect")
 			wg.Add(1)
+		// 转发到前端
 		case *proto.TransmitRes:
-			log.Logger.Debug("=============")
+			// 转发
+			ses := frontEnd.(comm.SessionAccessor).GetSession(msg.ClientId)
+			if ses == nil {
+				log.Logger.Error(fmt.Sprintf("Can't get user %d", msg.ClientId))
+				return
+			}
+
+			meta := comm.MessageMetaByID(int(msg.GetMsgId()))
+			if meta == nil {
+				log.Logger.Error(fmt.Sprintf("Can't get msg(%d) meta", msg.GetMsgId()))
+				return
+			}
+
+			obj := meta.NewType()
+			err := meta.Codec.Decode(msg.GetMsgData(), obj)
+			if err != nil {
+				log.Logger.Error(fmt.Sprintf("Decode msg(%d) fail : %v", msg.GetMsgId(), err))
+				return
+			}
+
+			ses.Send(obj)
 		default:
 		}
 	})

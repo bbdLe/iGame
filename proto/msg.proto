@@ -12,6 +12,8 @@ enum ProtoID
     CS_CMD_VERIFY_RES = 6;
     CS_CMD_TRANSMIT_REQ = 7;
     CS_CMD_TRANSMIT_RES = 8;
+    CS_CMD_KICK_CONN_REQ = 9;
+    CS_CMD_KICK_CONN_RES = 10;
 }
 
 //[id:CS_CMD_LOGIN_REQ]
@@ -23,9 +25,8 @@ message LoginReq {
 
 // [id:CS_CMD_LOGIN_RES]
 message LoginRes {
-    int32 result = 1;
-    string token = 2;
-    string server_addr = 3;
+    int32 ret_code = 1;
+    string ret_msg = 2;
 }
 
 // [id:CS_CMD_VERIFY_REQ]
@@ -63,4 +64,15 @@ message ChatReq {
 message ChatRes {
     int32 ret_code = 1;
     string ret_msg = 2;
+}
+
+// [id:CS_CMD_KICK_CONN_REQ]
+message KickConnReq {
+    int64 client_id = 1;
+}
+
+// [id:CS_CMD_KICK_CONN_RES]
+message KickConnRes {
+    int64 client_id = 1;
+    int32 ret_code = 2;
 }
