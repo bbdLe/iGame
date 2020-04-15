@@ -4,7 +4,7 @@ import (
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/proto"
 
-	"github.com/bbdLe/iGame/app/zone_svr/model"
+	"github.com/bbdLe/iGame/app/zone_svr/internal/model"
 	"github.com/bbdLe/iGame/comm/log"
 	"github.com/bbdLe/iGame/comm/processor"
 )

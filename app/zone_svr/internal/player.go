@@ -1,4 +1,4 @@
-package zone_svr
+package internal
 
 type commPlayer interface {
 	Init()

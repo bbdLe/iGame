@@ -1,7 +1,7 @@
 package ZoneMsgDispatcher
 
 import (
-	"github.com/bbdLe/iGame/app/zone_svr/model"
+	"github.com/bbdLe/iGame/app/zone_svr/internal/model"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/processor"
 	"sync"

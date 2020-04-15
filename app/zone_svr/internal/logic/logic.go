@@ -3,15 +3,15 @@ package logic
 import (
 	"fmt"
 
-	"github.com/bbdLe/iGame/app/zone_svr/ZoneMsgDispatcher"
-	"github.com/bbdLe/iGame/app/zone_svr/model"
+	"github.com/bbdLe/iGame/app/zone_svr/internal/ZoneMsgDispatcher"
+	"github.com/bbdLe/iGame/app/zone_svr/internal/model"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
 	"github.com/bbdLe/iGame/proto"
 )
 
 var (
-	MsgDispatcher = ZoneMsgDispatcher.NewZoneMsgDispather()
+	MsgDispatcher *ZoneMsgDispatcher.ZoneMsgDispatcher
 )
 
 func Send2Player(player *model.Player, msg interface{}) {
@@ -35,5 +35,6 @@ func Send2Player(player *model.Player, msg interface{}) {
 }
 
 func init() {
+	MsgDispatcher = ZoneMsgDispatcher.NewZoneMsgDispather()
 	MsgDispatcher.Register(int16(proto.ProtoID_CS_CMD_LOGIN_REQ), ZoneMsgLogin)
 }
