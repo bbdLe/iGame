@@ -37,3 +37,7 @@ func ZoneMsgTransmit(ev processor.Event) {
 
 	ses.Send(obj)
 }
+
+func ZoneMsgConnDisconnectRes(ev processor.Event) {
+	log.Logger.Debug(fmt.Sprintf("conn disconnect : %v", ev.Message()))
+}

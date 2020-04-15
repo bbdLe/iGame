@@ -22,6 +22,7 @@ var (
 func init() {
 	msgDispatcher = processor.NewMessageDispatcher()
 	msgDispatcher.RegisterMessage("TransmitRes", ZoneMsgTransmit)
+	msgDispatcher.RegisterMessage("ConnDisconnectRes", ZoneMsgConnDisconnectRes)
 }
 
 func ConnectBackend() {

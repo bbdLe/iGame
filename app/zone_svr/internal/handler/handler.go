@@ -60,21 +60,22 @@ func ZoneMsgConnDisconnect(ev processor.Event) {
 	msg := ev.Message().(*proto.ConnDisconnectReq)
 
 	clientID := msg.GetClientId()
-	 p, ok := model.GetPlayer(clientID)
+	p, ok := model.GetPlayer(clientID)
 	 // 不在的话, 直接回报
-	 if !ok {
+	if !ok {
 		log.Logger.Info(fmt.Sprintf("session[%d] disconnect: player not exist", clientID))
-		ev.Session().Send(&proto.ConnDisconnectRes{
+			ev.Session().Send(&proto.ConnDisconnectRes{
 			ClientId: clientID,
 			RetCode: 0,
 		})
 		return
 	 }
 
-	 p.OnLogout()
-	 model.DelPlayer(clientID)
+	p.OnLogout()
+	model.DelPlayer(clientID)
 	ev.Session().Send(&proto.ConnDisconnectRes{
 		ClientId: clientID,
 		RetCode: 0,
 	})
+	log.Logger.Info(fmt.Sprintf("player[%d] disconnect, remove it", clientID))
 }

@@ -48,10 +48,20 @@ func ZoneMsgConnClose(ev processor.Event) {
 	v, ok := ev.Session().(comm.ContextSet).GetContext(sessionTypeKey)
 	if !ok {
 		log.Logger.Error(fmt.Sprintf("session[%d] without session type", v))
+		return
 	}
 
+	if v.(int) == SESSION_SERVER {
+		return
+	}
 
-		log.Logger.Debug("conn close")
+	// 通知后端
+	logic.BackEndConnector.(peer.TCPConnector).Session().Send(
+		&proto.ConnDisconnectReq{
+			ClientId: ev.Session().ID(),
+	})
+
+	log.Logger.Debug("conn close")
 }
 
 // 默认处理, 处理消息中转
