@@ -19,6 +19,7 @@ var (
 func init() {
 	MsgDispather = processor.NewMessageDispatcher()
 	MsgDispather.RegisterMessage("TransmitReq", ZoneMsgTransmit)
+	MsgDispather.RegisterMessage("ConnDisconnectReq", ZoneMsgConnDisconnect)
 }
 
 func ZoneMsgTransmit(ev processor.Event) {
@@ -53,4 +54,27 @@ func ZoneMsgTransmit(ev processor.Event) {
 	})
 
 	log.Logger.Info(fmt.Sprintf("%v", obj))
+}
+
+func ZoneMsgConnDisconnect(ev processor.Event) {
+	msg := ev.Message().(*proto.ConnDisconnectReq)
+
+	clientID := msg.GetClientId()
+	 p, ok := model.GetPlayer(clientID)
+	 // 不在的话, 直接回报
+	 if !ok {
+		log.Logger.Info(fmt.Sprintf("session[%d] disconnect: player not exist", clientID))
+		ev.Session().Send(&proto.ConnDisconnectRes{
+			ClientId: clientID,
+			RetCode: 0,
+		})
+		return
+	 }
+
+	 p.OnLogout()
+	 model.DelPlayer(clientID)
+	ev.Session().Send(&proto.ConnDisconnectRes{
+		ClientId: clientID,
+		RetCode: 0,
+	})
 }

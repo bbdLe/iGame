@@ -1,6 +1,9 @@
 package model
 
-import "github.com/bbdLe/iGame/comm"
+import (
+	"github.com/bbdLe/iGame/comm"
+	"sync"
+)
 
 type PlayerCmpt interface {
 	Tick()
@@ -9,7 +12,8 @@ type PlayerCmpt interface {
 }
 
 var (
-	PlayerMap map[int64]*Player
+	playerMap map[int64]*Player
+	playerMapGuard sync.RWMutex
 )
 
 type Player struct {
@@ -35,6 +39,10 @@ func (self *Player) Tick() {
 	}
 }
 
+func (self *Player) OnLogout() {
+
+}
+
 func NewPlayer(sessionID int64, ses comm.Session) *Player {
 	self := &Player{
 		SessionID: sessionID,
@@ -45,14 +53,27 @@ func NewPlayer(sessionID int64, ses comm.Session) *Player {
 }
 
 func SetPlayer(sessionID int64, player *Player) {
-	PlayerMap[sessionID] = player
+	playerMapGuard.Lock()
+	defer playerMapGuard.Unlock()
+
+	playerMap[sessionID] = player
 }
 
 func GetPlayer(sessionID int64) (*Player, bool) {
-	p, ok := PlayerMap[sessionID]
+	playerMapGuard.RLock()
+	defer playerMapGuard.RUnlock()
+
+	p, ok := playerMap[sessionID]
 	return p, ok
 }
 
+func DelPlayer(sessionID int64) {
+	playerMapGuard.Lock()
+	defer playerMapGuard.Unlock()
+
+	delete(playerMap, sessionID)
+}
+
 func init() {
-	PlayerMap = make(map[int64]*Player)
+	playerMap = make(map[int64]*Player)
 }

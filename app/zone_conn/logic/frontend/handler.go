@@ -13,9 +13,15 @@ import (
 )
 
 const (
+	SESSION_CLIENT = iota
+	SESSION_SERVER
+)
+
+const (
 	authTimeKey = "auth_time"
 	authKey = "auth"
 	heartBeatKey = "heart_beat"
+	sessionTypeKey = "session_type"
 )
 
 func ZoneMsgVerify(ev processor.Event) {
@@ -31,13 +37,21 @@ func ZoneMsgVerify(ev processor.Event) {
 func ZoneMsgNewConn(ev processor.Event) {
 	log.Logger.Debug("new session connect")
 	now := time.Now().Unix()
+
+	ev.Session().(comm.ContextSet).SetContext(sessionTypeKey, SESSION_CLIENT)
 	ev.Session().(comm.ContextSet).SetContext(heartBeatKey, now)
 	ev.Session().(comm.ContextSet).SetContext(authTimeKey, now)
 	ev.Session().(comm.ContextSet).SetContext(authKey, false)
 }
 
 func ZoneMsgConnClose(ev processor.Event) {
-	log.Logger.Debug("conn close")
+	v, ok := ev.Session().(comm.ContextSet).GetContext(sessionTypeKey)
+	if !ok {
+		log.Logger.Error(fmt.Sprintf("session[%d] without session type", v))
+	}
+
+
+		log.Logger.Debug("conn close")
 }
 
 // 默认处理, 处理消息中转
