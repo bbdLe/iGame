@@ -1,12 +1,13 @@
 package zone_conn
 
 import (
-	"github.com/bbdLe/iGame/app/zone_conn/logic"
+	"github.com/bbdLe/iGame/app/zone_conn/logic/backend"
+	"github.com/bbdLe/iGame/app/zone_conn/logic/frontend"
 )
 
 func Run() {
-	logic.ConnectBackend()
-	logic.StartFrontEnd()
+	backend.ConnectBackend()
+	frontend.StartFrontEnd()
 
 	select {
 

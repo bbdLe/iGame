@@ -53,8 +53,7 @@ func Run() {
 				Ses: ev.Session(),
 				Msg: obj,
 			})
-		default:
-			log.Logger.Debug("test")
+			log.Logger.Info(fmt.Sprintf("%v", msg))
 	}
 	})
 	q.StartLoop()

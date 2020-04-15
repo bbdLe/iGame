@@ -1,9 +1,10 @@
-package logic
+package frontend
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/bbdLe/iGame/app/zone_conn/logic"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
 	"github.com/bbdLe/iGame/comm/peer"
@@ -17,7 +18,6 @@ const (
 	heartBeatKey = "heart_beat"
 )
 
-// 客户端和zone conn 验证包
 func ZoneMsgVerify(ev processor.Event) {
 	// 回包
 	ev.Session().(comm.ContextSet).SetContext("auth", true)
@@ -60,6 +60,6 @@ func ZoneDefaultHanlder(ev processor.Event) {
 		ClientId: ev.Session().ID(),
 	}
 
-	ZoneSvrConn.(peer.TCPConnector).Session().Send(msg)
+	logic.BackEndConnector.(peer.TCPConnector).Session().Send(msg)
 	log.Logger.Debug(fmt.Sprintf("%v", msg))
 }

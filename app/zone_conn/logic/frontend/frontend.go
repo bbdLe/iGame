@@ -1,33 +1,46 @@
-package logic
+package frontend
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/bbdLe/iGame/app/zone_conn/logic"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
 	"github.com/bbdLe/iGame/comm/peer"
 	"github.com/bbdLe/iGame/comm/processor"
 	"github.com/bbdLe/iGame/comm/sysmsg"
 	"github.com/bbdLe/iGame/proto"
+
+	_ "github.com/bbdLe/iGame/comm/peer/tcp"
+	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 )
 
 var (
-	frontEnd comm.Peer
+	msgDispatcher *processor.MessageDispatcher
 )
+
+func init() {
+	msgDispatcher = processor.NewMessageDispatcher()
+	msgDispatcher.SetDefaultCallback(ZoneDefaultHanlder)
+	msgDispatcher.RegisterMessage("VerifyReq", ZoneMsgVerify)
+}
 
 func StartFrontEnd() {
 	q := comm.NewEventQueue()
-	frontEnd = peer.NewGenericPeer("tcp.Acceptor", "zone_conn", "localhost:10086", q)
-	processor.BindProcessorHandler(frontEnd, "tcp.ltv", func(ev processor.Event) {
+	logic.FrontEndAcceptor = peer.NewGenericPeer("tcp.Acceptor", "zone_conn", "localhost:10086", q)
+	processor.BindProcessorHandler(logic.FrontEndAcceptor, "tcp.ltv", func(ev processor.Event) {
 		switch ev.Message().(type) {
 		case *sysmsg.SessionAccepted:
 			ZoneMsgNewConn(ev)
+
 		case *sysmsg.SessionClose:
 			ZoneMsgConnClose(ev)
+
 		case *proto.VerifyReq:
 			ev.Session().(comm.ContextSet).SetContext(heartBeatKey, time.Now().Unix())
 			ZoneMsgVerify(ev)
+
 		default:
 			ev.Session().(comm.ContextSet).SetContext(heartBeatKey, time.Now().Unix())
 
@@ -40,14 +53,14 @@ func StartFrontEnd() {
 			}
 
 			// 分发
-			FrontMsgDispatcher.OnEvent(ev)
+			msgDispatcher.OnEvent(ev)
 		}
 	})
 	q.StartLoop()
-	frontEnd.Start()
+	logic.FrontEndAcceptor.Start()
 
 	// kick time out
-	go frontendTick(q, frontEnd)
+	go frontendTick(q, logic.FrontEndAcceptor)
 }
 
 func frontendTick(q comm.EventQueue, peer comm.Peer) {
@@ -61,7 +74,7 @@ func frontendTick(q comm.EventQueue, peer comm.Peer) {
 }
 
 func KickIllegalConn(q comm.EventQueue, peer comm.Peer) {
-	frontEnd.(comm.SessionAccessor).VisitSession(func(ses comm.Session) bool {
+	logic.FrontEndAcceptor.(comm.SessionAccessor).VisitSession(func(ses comm.Session) bool {
 		now := time.Now()
 
 		// 踢掉不活跃连接
