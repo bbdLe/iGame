@@ -21,6 +21,9 @@ message LoginReq {
     string version = 1;
     string platform = 2;
     string uid = 3;
+    string channel = 4;
+    int64 AuthTime = 5;
+    string token = 6;
 }
 
 // [id:CS_CMD_LOGIN_RES]

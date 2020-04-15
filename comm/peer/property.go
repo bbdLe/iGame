@@ -21,6 +21,7 @@ func (self *CoreContextSet) SetContext(key interface{}, value interface{}) {
 
 	for _, c := range self.ctxes {
 		if c.name == key {
+			c.value = value
 			return
 		}
 	}
