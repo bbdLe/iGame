@@ -37,6 +37,6 @@ func BindProcessorHandler(peer comm.Peer, procName string, cb EventCallback, arg
 		bundle := peer.(ProcessorBundle)
 		proc(bundle, cb, args)
 	} else {
-		panic(fmt.Errorf("BindProcessorHandler faild, %s not in handler", procName))
+		panic(fmt.Errorf("BindProcessorHandler faild, %s not in logic", procName))
 	}
 }

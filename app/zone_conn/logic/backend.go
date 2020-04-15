@@ -1,4 +1,4 @@
-package handler
+package logic
 
 import (
 	"fmt"
@@ -27,6 +27,7 @@ func ConnectBackend() {
 	q := comm.NewEventQueue()
 	ZoneSvrConn = peer.NewGenericPeer("tcp.Connector", "zone_svr", "localhost:10010", q)
 	ZoneSvrConn.(peer.TCPConnector).SetReconnectDuration(time.Second * 3)
+
 	processor.BindProcessorHandler(ZoneSvrConn, "tcp.ltv", func(ev processor.Event) {
 		switch msg := ev.Message().(type) {
 		case *sysmsg.SessionConnected:

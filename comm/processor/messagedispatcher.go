@@ -25,7 +25,7 @@ func (self *MessageDispatcher) OnEvent(ev Event) {
 	self.handlerGuard.RUnlock()
 
 	if !ok {
-		log.Logger.Error(fmt.Sprintf("MsgType %s  handler not exist, use default handler", pt.String()))
+		log.Logger.Error(fmt.Sprintf("MsgType %s  logic not exist, use default logic", pt.String()))
 		if self.defaultCallback != nil {
 			self.defaultCallback(ev)
 		}

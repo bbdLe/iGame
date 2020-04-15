@@ -4,16 +4,24 @@ package proto;
 enum ProtoID
 {
     CS_CMD_START = 0;
+
     CS_CMD_LOGIN_REQ = 1;
     CS_CMD_LOGIN_RES = 2;
+
     CS_CMD_CHAT_REQ = 3;
     CS_CMD_CHAT_RES = 4;
+
     CS_CMD_VERIFY_REQ = 5;
     CS_CMD_VERIFY_RES = 6;
+
     CS_CMD_TRANSMIT_REQ = 7;
     CS_CMD_TRANSMIT_RES = 8;
+
     CS_CMD_KICK_CONN_REQ = 9;
     CS_CMD_KICK_CONN_RES = 10;
+
+    CS_CMD_CONN_DISCONNECT_REQ = 11;
+    CS_CMD_CONN_DISCONNECT_RES = 12;
 }
 
 //[id:CS_CMD_LOGIN_REQ]
@@ -76,6 +84,17 @@ message KickConnReq {
 
 // [id:CS_CMD_KICK_CONN_RES]
 message KickConnRes {
+    int64 client_id = 1;
+    int32 ret_code = 2;
+}
+
+// [id:CS_CMD_CONN_DISCONNECT_REQ]
+message ConnDisconnectReq {
+    int64 client_id = 1;
+}
+
+// [id:CS_CMD_CONN_DISCONNECT_RES]
+message ConnDisconnectRes {
     int64 client_id = 1;
     int32 ret_code = 2;
 }
