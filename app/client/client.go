@@ -1,8 +1,6 @@
 package client
 
 import (
-	"sync"
-
 	"github.com/bbdLe/iGame/app/client/handler"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
@@ -10,6 +8,8 @@ import (
 	"github.com/bbdLe/iGame/comm/processor"
 	"github.com/bbdLe/iGame/comm/sysmsg"
 	"github.com/bbdLe/iGame/proto"
+	"sync"
+	"time"
 
 	_ "github.com/bbdLe/iGame/comm/peer/tcp"
 	_ "github.com/bbdLe/iGame/comm/processor/tcp"
@@ -29,9 +29,9 @@ func connectConn(addr string, token string) error {
 				Token: token,
 				Server: "1",
 			})
+			wg.Done()
 		case *sysmsg.SessionClose:
 			log.Logger.Debug("Session Close")
-			wg.Done()
 		default:
 			handler.MsgDispatcher.OnEvent(ev)
 		}
@@ -40,6 +40,20 @@ func connectConn(addr string, token string) error {
 	p.Start()
 
 	wg.Wait()
+
+	go func() {
+		for {
+			q.Post(func() {
+				p.(peer.TCPConnector).Session().Send(&proto.HeartBeatReq{
+				})
+			})
+			time.Sleep(time.Second)
+		}
+	}()
+
+	select {
+
+	}
 
 	return nil
 }

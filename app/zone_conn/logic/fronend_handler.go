@@ -1,13 +1,11 @@
-package frontend
+package logic
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/bbdLe/iGame/app/zone_conn/logic"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
-	"github.com/bbdLe/iGame/comm/peer"
 	"github.com/bbdLe/iGame/comm/processor"
 	"github.com/bbdLe/iGame/proto"
 )
@@ -15,13 +13,6 @@ import (
 const (
 	SESSION_CLIENT = iota
 	SESSION_SERVER
-)
-
-const (
-	authTimeKey = "auth_time"
-	authKey = "auth"
-	heartBeatKey = "heart_beat"
-	sessionTypeKey = "session_type"
 )
 
 func ZoneMsgVerify(ev processor.Event) {
@@ -38,14 +29,17 @@ func ZoneMsgNewConn(ev processor.Event) {
 	log.Logger.Debug("new session connect")
 	now := time.Now().Unix()
 
-	ev.Session().(comm.ContextSet).SetContext(sessionTypeKey, SESSION_CLIENT)
-	ev.Session().(comm.ContextSet).SetContext(heartBeatKey, now)
-	ev.Session().(comm.ContextSet).SetContext(authTimeKey, now)
-	ev.Session().(comm.ContextSet).SetContext(authKey, false)
+	ev.Session().(comm.ContextSet).SetContext(SessionTypeKey, SESSION_CLIENT)
+	ev.Session().(comm.ContextSet).SetContext(HeartBeatKey, now)
+	ev.Session().(comm.ContextSet).SetContext(AuthTimeKey, now)
+	ev.Session().(comm.ContextSet).SetContext(AuthKey, false)
+
+	// 新增连接
+	FrontEndMgr.AddSession(ev.Session())
 }
 
 func ZoneMsgConnClose(ev processor.Event) {
-	v, ok := ev.Session().(comm.ContextSet).GetContext(sessionTypeKey)
+	v, ok := ev.Session().(comm.ContextSet).GetContext(SessionTypeKey)
 	if !ok {
 		log.Logger.Error(fmt.Sprintf("session[%d] without session type", v))
 		return
@@ -56,11 +50,13 @@ func ZoneMsgConnClose(ev processor.Event) {
 	}
 
 	// 通知后端
-	logic.BackEndConnector.(peer.TCPConnector).Session().Send(
+	BackEndMgr.Send(
 		&proto.ConnDisconnectReq{
 			ClientId: ev.Session().ID(),
 	})
 
+	// 移除连接
+	FrontEndMgr.DelSession(ev.Session())
 	log.Logger.Debug("conn close")
 }
 
@@ -84,6 +80,6 @@ func ZoneDefaultHanlder(ev processor.Event) {
 		ClientId: ev.Session().ID(),
 	}
 
-	logic.BackEndConnector.(peer.TCPConnector).Session().Send(msg)
-	log.Logger.Debug(fmt.Sprintf("%v", msg))
+	BackEndMgr.Send(msg)
+	//log.Logger.Debug(fmt.Sprintf("%v", msg))
 }

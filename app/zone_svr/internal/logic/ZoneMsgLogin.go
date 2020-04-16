@@ -1,15 +1,17 @@
 package logic
 
 import (
+	"github.com/bbdLe/iGame/app/zone_svr/internal"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/proto"
+	"time"
 
 	"github.com/bbdLe/iGame/app/zone_svr/internal/model"
 	"github.com/bbdLe/iGame/comm/log"
 	"github.com/bbdLe/iGame/comm/processor"
 )
 
-func ZoneMsgLogin(player *model.Player, ev processor.Event) {
+func ZoneMsgLogin(player internal.CommPlayer, ev processor.Event) {
 	v, ok := ev.Session().(comm.ContextSet).GetContext("clientID")
 	if !ok {
 		log.Logger.Error("Get ClientID fail")
@@ -28,11 +30,24 @@ func ZoneMsgLogin(player *model.Player, ev processor.Event) {
 
 	// 新建玩家
 	player = model.NewPlayer(clientID, ev.Session())
-	model.SetPlayer(clientID, player)
+	internal.GameMgr.SetPlayer(clientID, player)
 
-	Send2Player(player, &proto.LoginRes{
+	internal.Send2Player(player, &proto.LoginRes{
 		RetCode: 0,
 		RetMsg: "",
 	})
+}
+
+func ZoneMsgHeartBeat(player internal.CommPlayer, ev processor.Event) {
+	if player == nil {
+		// todo 踢掉session
+		log.Logger.Error("player not exist")
+		return
+	}
+
+
+	player.SetHeartBeat(time.Now())
+	// 回包
+	internal.Send2Player(player, &proto.HeartBeatRes{})
 }
 

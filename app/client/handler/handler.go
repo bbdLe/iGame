@@ -15,6 +15,7 @@ func init() {
 	MsgDispatcher = processor.NewMessageDispatcher()
 	MsgDispatcher.RegisterMessage("VerifyRes", ZoneVerifyRes)
 	MsgDispatcher.RegisterMessage("LoginRes", ZoneLoginRes)
+	MsgDispatcher.RegisterMessage("HeartBeatRes", ZoneHeartBeatRes)
 }
 
 func ZoneVerifyRes(ev processor.Event) {
@@ -34,4 +35,8 @@ func ZoneVerifyRes(ev processor.Event) {
 func ZoneLoginRes(ev processor.Event) {
 	msg := ev.Message().(*proto.LoginRes)
 	log.Logger.Debug(fmt.Sprintf("%v", msg))
+}
+
+func ZoneHeartBeatRes(ev processor.Event) {
+
 }

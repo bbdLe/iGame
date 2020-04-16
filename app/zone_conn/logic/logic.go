@@ -1,8 +1,18 @@
 package logic
 
-import "github.com/bbdLe/iGame/comm"
+const (
+	AuthTimeKey = "auth_time"
+	AuthKey = "auth"
+	HeartBeatKey = "heart_beat"
+	SessionTypeKey = "session_type"
+)
 
 var (
-	FrontEndAcceptor comm.Peer
-	BackEndConnector comm.Peer
+	BackEndMgr *BackEndManager
+	FrontEndMgr *FrontEndManager
 )
+
+func init() {
+	FrontEndMgr = NewFrontEventManager()
+	BackEndMgr = NewBackEndManager()
+}

@@ -1,10 +1,9 @@
-package backend
+package logic
 
 import (
 	"sync"
 	"time"
 
-	"github.com/bbdLe/iGame/app/zone_conn/logic"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
 	"github.com/bbdLe/iGame/comm/peer"
@@ -23,17 +22,23 @@ func init() {
 	msgDispatcher = processor.NewMessageDispatcher()
 	msgDispatcher.RegisterMessage("TransmitRes", ZoneMsgTransmit)
 	msgDispatcher.RegisterMessage("ConnDisconnectRes", ZoneMsgConnDisconnectRes)
+	msgDispatcher.RegisterMessage("KickConnReq", ZoneMsgKickConnReq)
 }
 
-func ConnectBackend() {
+type BackEndManager struct {
+	queue comm.EventQueue
+	connector comm.Peer
+}
+
+func (self *BackEndManager) Start() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	q := comm.NewEventQueue()
-	logic.BackEndConnector = peer.NewGenericPeer("tcp.Connector", "zone_svr", "localhost:10010", q)
-	logic.BackEndConnector.(peer.TCPConnector).SetReconnectDuration(time.Second * 3)
+	self.queue = comm.NewEventQueue()
+	self.connector = peer.NewGenericPeer("tcp.Connector", "zone_svr", "localhost:10010", self.queue)
+	self.connector.(peer.TCPConnector).SetReconnectDuration(time.Second * 3)
 
-	processor.BindProcessorHandler(logic.BackEndConnector, "tcp.ltv", func(ev processor.Event) {
+	processor.BindProcessorHandler(self.connector, "tcp.ltv", func(ev processor.Event) {
 		switch ev.Message().(type) {
 		case *sysmsg.SessionConnected:
 			log.Logger.Debug("connect")
@@ -45,8 +50,16 @@ func ConnectBackend() {
 			msgDispatcher.OnEvent(ev)
 		}
 	})
-	q.StartLoop()
-	logic.BackEndConnector.Start()
+	self.queue.StartLoop()
+	self.connector.Start()
 
 	wg.Wait()
+}
+
+func (self *BackEndManager) Send(msg interface{}) {
+	self.connector.(peer.TCPConnector).Session().Send(msg)
+}
+
+func NewBackEndManager() *BackEndManager {
+	return &BackEndManager{}
 }

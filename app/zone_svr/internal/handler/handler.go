@@ -2,9 +2,8 @@ package handler
 
 import (
 	"fmt"
-
+	"github.com/bbdLe/iGame/app/zone_svr/internal"
 	"github.com/bbdLe/iGame/app/zone_svr/internal/logic"
-	"github.com/bbdLe/iGame/app/zone_svr/internal/model"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/event"
 	"github.com/bbdLe/iGame/comm/log"
@@ -14,19 +13,25 @@ import (
 
 var (
 	MsgDispather  *processor.MessageDispatcher
+	BlockMsgMap map[proto.ProtoID]struct{}
 )
 
 func init() {
 	MsgDispather = processor.NewMessageDispatcher()
 	MsgDispather.RegisterMessage("TransmitReq", ZoneMsgTransmit)
 	MsgDispather.RegisterMessage("ConnDisconnectReq", ZoneMsgConnDisconnect)
+	MsgDispather.RegisterMessage("KickConnRes", ZoneMsgKickConnRes)
+
+
+	BlockMsgMap = make(map[proto.ProtoID]struct{})
+	BlockMsgMap[proto.ProtoID_CS_CMD_HEART_BETA_REQ] = struct{}{}
 }
 
 func ZoneMsgTransmit(ev processor.Event) {
 	msg := ev.Message().(*proto.TransmitReq)
 
 	// 获取玩家
-	p, _ := model.GetPlayer(msg.GetClientId())
+	p, _ := internal.GameMgr.GetPlayer(msg.ClientId)
 
 	// 获取meta
 	msgID := msg.GetMsgId()
@@ -53,14 +58,16 @@ func ZoneMsgTransmit(ev processor.Event) {
 		Msg: obj,
 	})
 
-	log.Logger.Info(fmt.Sprintf("%v", obj))
+	if _, ok := BlockMsgMap[proto.ProtoID(meta.MsgId)]; !ok {
+		log.Logger.Info(fmt.Sprintf("%v", obj))
+	}
 }
 
 func ZoneMsgConnDisconnect(ev processor.Event) {
 	msg := ev.Message().(*proto.ConnDisconnectReq)
 
 	clientID := msg.GetClientId()
-	p, ok := model.GetPlayer(clientID)
+	p, ok := internal.GameMgr.GetPlayer(clientID)
 	 // 不在的话, 直接回报
 	if !ok {
 		log.Logger.Info(fmt.Sprintf("session[%d] disconnect: player not exist", clientID))
@@ -69,13 +76,19 @@ func ZoneMsgConnDisconnect(ev processor.Event) {
 			RetCode: 0,
 		})
 		return
-	 }
+	}
 
 	p.OnLogout()
-	model.DelPlayer(clientID)
+	internal.GameMgr.DelPlayer(clientID)
+
 	ev.Session().Send(&proto.ConnDisconnectRes{
 		ClientId: clientID,
 		RetCode: 0,
 	})
-	log.Logger.Info(fmt.Sprintf("player[%d] disconnect, remove it", clientID))
+
+	log.Logger.Info(fmt.Sprintf("player[%d] disconnect", clientID))
+}
+
+func ZoneMsgKickConnRes(ev processor.Event) {
+	return
 }

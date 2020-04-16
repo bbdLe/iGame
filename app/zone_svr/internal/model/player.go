@@ -1,8 +1,12 @@
 package model
 
 import (
+	"fmt"
+	"github.com/bbdLe/iGame/app/zone_svr/internal"
+	"time"
+
 	"github.com/bbdLe/iGame/comm"
-	"sync"
+	"github.com/bbdLe/iGame/comm/log"
 )
 
 type PlayerCmpt interface {
@@ -11,18 +15,17 @@ type PlayerCmpt interface {
 	Init()
 }
 
-var (
-	playerMap map[int64]*Player
-	playerMapGuard sync.RWMutex
-)
-
 type Player struct {
-	baseInfo PlayerBaseInfo
+	Ses comm.Session
+	SessionID int64
 
 	Cmpts []PlayerCmpt
-	SessionID int64
+	baseInfo PlayerBaseInfo
+
+	room internal.CommRoom
+
+	HeartBeatTime time.Time
 	Status int32
-	Ses comm.Session
 }
 
 func (self *Player) RegCmpt(m PlayerCmpt) {
@@ -37,43 +40,49 @@ func (self *Player) Tick() {
 	for _, cmpt := range self.Cmpts {
 		cmpt.Tick()
 	}
+
+	if self.HeartBeatTime.Add(time.Second * 3).Before(time.Now()) {
+		log.Logger.Info(fmt.Sprintf("player[%d] heartbeat time expire", self.SessionID))
+		internal.GameMgr.KickPlayer(self)
+	}
+}
+
+func (self *Player) SetHeartBeat(t time.Time) {
+	self.HeartBeatTime = t
+}
+
+func (self *Player) HeartBeat() time.Time {
+	return self.HeartBeatTime
+}
+
+func (self *Player) Session() comm.Session {
+	return self.Ses
+}
+
+func (self *Player) ID() int64 {
+	return self.SessionID
+}
+
+func (self *Player) Room() internal.CommRoom {
+	return self.room
+}
+
+func (self *Player) SetRoom(room internal.CommRoom) {
+	self.room = room
 }
 
 func (self *Player) OnLogout() {
-
 }
 
 func NewPlayer(sessionID int64, ses comm.Session) *Player {
 	self := &Player{
 		SessionID: sessionID,
 		Ses : ses,
+		HeartBeatTime: time.Now(),
 	}
 	self.Init()
 	return self
 }
 
-func SetPlayer(sessionID int64, player *Player) {
-	playerMapGuard.Lock()
-	defer playerMapGuard.Unlock()
-
-	playerMap[sessionID] = player
-}
-
-func GetPlayer(sessionID int64) (*Player, bool) {
-	playerMapGuard.RLock()
-	defer playerMapGuard.RUnlock()
-
-	p, ok := playerMap[sessionID]
-	return p, ok
-}
-
-func DelPlayer(sessionID int64) {
-	playerMapGuard.Lock()
-	defer playerMapGuard.Unlock()
-
-	delete(playerMap, sessionID)
-}
-
 func init() {
-	playerMap = make(map[int64]*Player)
 }
