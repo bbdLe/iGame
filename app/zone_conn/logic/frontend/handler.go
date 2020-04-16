@@ -1,7 +1,8 @@
-package logic
+package frontend
 
 import (
 	"fmt"
+	"github.com/bbdLe/iGame/app/zone_conn/logic"
 	"time"
 
 	"github.com/bbdLe/iGame/comm"
@@ -29,17 +30,17 @@ func ZoneMsgNewConn(ev processor.Event) {
 	log.Logger.Debug("new session connect")
 	now := time.Now().Unix()
 
-	ev.Session().(comm.ContextSet).SetContext(SessionTypeKey, SESSION_CLIENT)
-	ev.Session().(comm.ContextSet).SetContext(HeartBeatKey, now)
-	ev.Session().(comm.ContextSet).SetContext(AuthTimeKey, now)
-	ev.Session().(comm.ContextSet).SetContext(AuthKey, false)
+	ev.Session().(comm.ContextSet).SetContext(logic.SessionTypeKey, SESSION_CLIENT)
+	ev.Session().(comm.ContextSet).SetContext(logic.HeartBeatKey, now)
+	ev.Session().(comm.ContextSet).SetContext(logic.AuthTimeKey, now)
+	ev.Session().(comm.ContextSet).SetContext(logic.AuthKey, false)
 
 	// 新增连接
-	FrontEndMgr.AddSession(ev.Session())
+	logic.FrontEndMgr.AddSession(ev.Session())
 }
 
 func ZoneMsgConnClose(ev processor.Event) {
-	v, ok := ev.Session().(comm.ContextSet).GetContext(SessionTypeKey)
+	v, ok := ev.Session().(comm.ContextSet).GetContext(logic.SessionTypeKey)
 	if !ok {
 		log.Logger.Error(fmt.Sprintf("session[%d] without session type", v))
 		return
@@ -50,13 +51,13 @@ func ZoneMsgConnClose(ev processor.Event) {
 	}
 
 	// 通知后端
-	BackEndMgr.Send(
+	logic.BackEndMgr.Send(
 		&proto.ConnDisconnectReq{
 			ClientId: ev.Session().ID(),
 	})
 
 	// 移除连接
-	FrontEndMgr.DelSession(ev.Session())
+	logic.FrontEndMgr.DelSession(ev.Session())
 	log.Logger.Debug("conn close")
 }
 
@@ -80,6 +81,5 @@ func ZoneDefaultHanlder(ev processor.Event) {
 		ClientId: ev.Session().ID(),
 	}
 
-	BackEndMgr.Send(msg)
-	//log.Logger.Debug(fmt.Sprintf("%v", msg))
+	logic.BackEndMgr.Send(msg)
 }

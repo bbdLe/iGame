@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"github.com/bbdLe/iGame/app/zone_conn/logic"
 	"sync"
 	"time"
 
@@ -23,14 +24,16 @@ func init() {
 	msgDispatcher.RegisterMessage("TransmitRes", ZoneMsgTransmit)
 	msgDispatcher.RegisterMessage("ConnDisconnectRes", ZoneMsgConnDisconnectRes)
 	msgDispatcher.RegisterMessage("KickConnReq", ZoneMsgKickConnReq)
+
+	logic.BackEndMgr = NewBackEndManager()
 }
 
-type BackEndManager struct {
+type BackendManagerImpl struct {
 	queue comm.EventQueue
 	connector comm.Peer
 }
 
-func (self *BackEndManager) Start() {
+func (self *BackendManagerImpl) Start() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -56,10 +59,10 @@ func (self *BackEndManager) Start() {
 	wg.Wait()
 }
 
-func (self *BackEndManager) Send(msg interface{}) {
+func (self *BackendManagerImpl) Send(msg interface{}) {
 	self.connector.(peer.TCPConnector).Session().Send(msg)
 }
 
-func NewBackEndManager() *BackEndManager {
-	return &BackEndManager{}
+func NewBackEndManager() *BackendManagerImpl {
+	return &BackendManagerImpl{}
 }

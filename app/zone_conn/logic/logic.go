@@ -1,5 +1,9 @@
 package logic
 
+import (
+	"github.com/bbdLe/iGame/comm"
+)
+
 const (
 	AuthTimeKey = "auth_time"
 	AuthKey = "auth"
@@ -8,11 +12,22 @@ const (
 )
 
 var (
-	BackEndMgr *BackEndManager
-	FrontEndMgr *FrontEndManager
+	BackEndMgr BackendManager
+	FrontEndMgr FrontendManager
 )
 
-func init() {
-	FrontEndMgr = NewFrontEventManager()
-	BackEndMgr = NewBackEndManager()
+type BackendManager interface {
+	Start()
+
+	Send(interface{})
+}
+
+type FrontendManager interface {
+	Start()
+
+	GetSession(int64) (comm.Session, bool)
+	AddSession(comm.Session)
+	DelSession(comm.Session)
+
+	Kick(int64)
 }

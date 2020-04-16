@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"github.com/bbdLe/iGame/app/zone_conn/logic"
 
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
@@ -14,7 +15,7 @@ func ZoneMsgTransmit(ev processor.Event) {
 	msg := ev.Message().(*proto.TransmitRes)
 
 	clientID := msg.GetClientId()
-	ses, ok := FrontEndMgr.GetSession(clientID)
+	ses, ok := logic.FrontEndMgr.GetSession(clientID)
 	if !ok {
 		log.Logger.Error(fmt.Sprintf("session[%d] not found", clientID))
 		return
@@ -45,7 +46,7 @@ func ZoneMsgKickConnReq(ev processor.Event) {
 	msg := ev.Message().(*proto.KickConnReq)
 
 	log.Logger.Debug(fmt.Sprintf("recv zone_svr kick conn[%d] request", msg.GetClientId()))
-	FrontEndMgr.Kick(msg.GetClientId())
+	logic.FrontEndMgr.Kick(msg.GetClientId())
 	ev.Session().Send(&proto.KickConnRes{
 		ClientId: msg.GetClientId(),
 		RetCode: 0,

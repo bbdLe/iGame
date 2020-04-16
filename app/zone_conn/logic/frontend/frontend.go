@@ -1,7 +1,8 @@
-package logic
+package frontend
 
 import (
 	"fmt"
+	"github.com/bbdLe/iGame/app/zone_conn/logic"
 	"time"
 
 	"github.com/bbdLe/iGame/comm"
@@ -16,8 +17,16 @@ import (
 )
 
 var (
-	frontEndMsgDispatcher *processor.MessageDispatcher
+	MsgDispatcher *processor.MessageDispatcher
 )
+
+func init() {
+	MsgDispatcher = processor.NewMessageDispatcher()
+	MsgDispatcher.SetDefaultCallback(ZoneDefaultHanlder)
+	MsgDispatcher.RegisterMessage("VerifyReq", ZoneMsgVerify)
+
+	logic.FrontEndMgr = NewFrontEventManager()
+}
 
 type FrontEndManager struct {
 	sessionMap map[int64]comm.Session
@@ -38,14 +47,14 @@ func (self *FrontEndManager) Start() {
 			ZoneMsgConnClose(ev)
 
 		case *proto.VerifyReq:
-			ev.Session().(comm.ContextSet).SetContext(HeartBeatKey, time.Now().Unix())
+			ev.Session().(comm.ContextSet).SetContext(logic.HeartBeatKey, time.Now().Unix())
 			ZoneMsgVerify(ev)
 
 		default:
-			ev.Session().(comm.ContextSet).SetContext(HeartBeatKey, time.Now().Unix())
+			ev.Session().(comm.ContextSet).SetContext(logic.HeartBeatKey, time.Now().Unix())
 
 			// 没验证的连接要踢掉
-			v, ok := ev.Session().(comm.ContextSet).GetContext(AuthKey)
+			v, ok := ev.Session().(comm.ContextSet).GetContext(logic.AuthKey)
 			if !ok || v.(bool) != true {
 				log.Logger.Error(fmt.Sprintf("session[%d] not auth, kick it out", ev.Session().ID()))
 				ev.Session().Close()
@@ -53,7 +62,7 @@ func (self *FrontEndManager) Start() {
 			}
 
 			// 分发
-			frontEndMsgDispatcher.OnEvent(ev)
+			MsgDispatcher.OnEvent(ev)
 		}
 	})
 	self.queue.StartLoop()
@@ -114,7 +123,7 @@ func (self *FrontEndManager) tickBase() {
 
 	self.Visit(func(ses comm.Session){
 		// 踢掉不活跃连接
-		v1, ok := ses.(comm.ContextSet).GetContext(HeartBeatKey)
+		v1, ok := ses.(comm.ContextSet).GetContext(logic.HeartBeatKey)
 		if !ok {
 			log.Logger.Error(fmt.Sprintf("session[%d] without heartbeat", ses.ID()))
 			self.Kick(ses.ID())
@@ -129,7 +138,7 @@ func (self *FrontEndManager) tickBase() {
 		}
 
 		// 踢掉验证超时
-		v2, ok := ses.(comm.ContextSet).GetContext(AuthKey)
+		v2, ok := ses.(comm.ContextSet).GetContext(logic.AuthKey)
 		if !ok {
 			log.Logger.Error(fmt.Sprintf("session[%d] without autukey, kick it out", ses.ID()))
 			self.Kick(ses.ID())
@@ -141,7 +150,7 @@ func (self *FrontEndManager) tickBase() {
 			return
 		}
 
-		v3, ok := ses.(comm.ContextSet).GetContext(AuthTimeKey)
+		v3, ok := ses.(comm.ContextSet).GetContext(logic.AuthTimeKey)
 		if !ok {
 			log.Logger.Error(fmt.Sprintf("session[%d] without authtime key, kick it out", ses.ID()))
 			self.Kick(ses.ID())
@@ -161,12 +170,4 @@ func NewFrontEventManager() *FrontEndManager {
 	return &FrontEndManager{
 		sessionMap: make(map[int64]comm.Session),
 	}
-}
-
-func init() {
-	frontEndMsgDispatcher = processor.NewMessageDispatcher()
-	frontEndMsgDispatcher.SetDefaultCallback(ZoneDefaultHanlder)
-	frontEndMsgDispatcher.RegisterMessage("VerifyReq", ZoneMsgVerify)
-
-	FrontEndMgr = NewFrontEventManager()
 }
