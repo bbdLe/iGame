@@ -21,6 +21,7 @@ func (self *GameManager) Tick() {
 	if self.lastTickTime.Add(self.tickInterVal).After(time.Now()) {
 		internal.ZoneEventQueue.Post(func() {
 			self.TickBase()
+			internal.RoomMgr.Tick()
 		})
 		self.lastTickTime = time.Now()
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/bbdLe/iGame/comm/sysmsg"
 
 	_ "github.com/bbdLe/iGame/app/zone_svr/internal/model"
+	_ "github.com/bbdLe/iGame/app/zone_svr/internal/room"
 	_ "github.com/bbdLe/iGame/comm/peer/tcp"
 	_ "github.com/bbdLe/iGame/comm/processor/tcp"
 )

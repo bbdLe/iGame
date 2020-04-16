@@ -12,6 +12,7 @@ var (
 	ZoneAcceptor comm.Peer
 	ZoneEventQueue comm.EventQueue
 	GameMgr GameManager
+	RoomMgr RoomManager
 )
 
 type CommPlayer interface {
@@ -32,12 +33,18 @@ type CommPlayer interface {
 	Room() CommRoom
 
 	SetRoom(CommRoom)
+
+	BaseInfo() CommPlayerBaseInfo
 }
 
 type CommRoom interface {
 	ID() int64
 
 	SetID(int64)
+
+	AddPlayer(CommPlayer)
+
+	RemovePlayer(CommPlayer)
 }
 
 type GameManager interface{
@@ -52,6 +59,22 @@ type GameManager interface{
 	DelPlayer(int64)
 
 	VisitPlayer(func(CommPlayer))
+}
+
+type RoomManager interface {
+	Tick()
+
+	NewRoom() CommRoom
+}
+
+type CommPlayerBaseInfo interface {
+	Exp() int64
+
+	Level() int
+
+	AddExp(int64)
+
+	Player() CommPlayer
 }
 
 func Send2Player(player CommPlayer, msg interface{}) {

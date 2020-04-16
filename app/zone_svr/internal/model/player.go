@@ -12,7 +12,7 @@ import (
 type PlayerCmpt interface {
 	Tick()
 
-	Init()
+	Init(*Player)
 }
 
 type Player struct {
@@ -29,6 +29,7 @@ type Player struct {
 }
 
 func (self *Player) RegCmpt(m PlayerCmpt) {
+	m.Init(self)
 	self.Cmpts = append(self.Cmpts, m)
 }
 
@@ -72,6 +73,13 @@ func (self *Player) SetRoom(room internal.CommRoom) {
 }
 
 func (self *Player) OnLogout() {
+	if self.Room() != nil {
+		self.Room().RemovePlayer(self)
+	}
+}
+
+func (self *Player) BaseInfo() internal.CommPlayerBaseInfo {
+	return &self.baseInfo
 }
 
 func NewPlayer(sessionID int64, ses comm.Session) *Player {

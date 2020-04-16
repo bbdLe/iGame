@@ -12,5 +12,6 @@ func ZoneMsgCreateRoom(player internal.CommPlayer, ev processor.Event) {
 		return
 	}
 
-
+	r := internal.RoomMgr.NewRoom()
+	r.AddPlayer(player)
 }
