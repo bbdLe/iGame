@@ -23,29 +23,22 @@ type CommPlayer interface {
 	Session() comm.Session
 
 	ID() int64
+	Name() string
 
 	OnLogout()
+	OnLogin()
 
 	SetHeartBeat(time.Time)
-
 	HeartBeat() time.Time
 
 	Room() CommRoom
-
 	SetRoom(CommRoom)
 
 	BaseInfo() CommPlayerBaseInfo
+
+	Send(interface{})
 }
 
-type CommRoom interface {
-	ID() int64
-
-	SetID(int64)
-
-	AddPlayer(CommPlayer)
-
-	RemovePlayer(CommPlayer)
-}
 
 type GameManager interface{
 	Start()
@@ -61,10 +54,24 @@ type GameManager interface{
 	VisitPlayer(func(CommPlayer))
 }
 
+type CommRoom interface {
+	ID() int64
+
+	SetID(int64)
+
+	AddPlayer(CommPlayer)
+
+	RemovePlayer(CommPlayer)
+
+	Broadcast(interface{})
+}
+
 type RoomManager interface {
 	Tick()
 
 	NewRoom() CommRoom
+
+	GetRoom(int64) (CommRoom, bool)
 }
 
 type CommPlayerBaseInfo interface {

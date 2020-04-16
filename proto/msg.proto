@@ -28,6 +28,19 @@ enum ProtoID
 
     CS_CMD_CREATE_ROOM_REQ = 15;
     CS_CMD_CREATE_ROOM_RES = 16;
+
+    CS_CMD_BROADCAST_MSG_REQ = 17;
+    CS_CMD_BROADCAST_MSG_RES = 18;
+
+    CS_CMD_ENTER_ROOM_REQ = 19;
+    CS_CMD_ENTER_ROOM_RES = 20;
+}
+
+enum MSG
+{
+    TYPE_START = 0;
+    TYPE_WORLD = 1;
+    TYPE_SYSTEM = 2;
 }
 
 //[id:CS_CMD_LOGIN_REQ]
@@ -124,4 +137,29 @@ message CreateRoomReq {
 message CreateRoomRes {
     int32 ret_code = 1;
     int64 room_id = 2;
+}
+
+// [id:CS_CMD_BROADCAST_MSG_REQ ]
+message BroadcastMsgReq {
+    string msg = 1;
+    MSG type = 2;
+}
+
+// [id:CS_CMD_BROADCAST_MSG_RES ]
+message BroadcastMsgRes {
+    int32 ret_code = 1;
+    string msg = 2;
+    MSG type = 3;
+}
+
+// [id:CS_CMD_ENTER_ROOM_REQ ]
+message EnterRoomReq {
+    int64 room_id = 1;
+}
+
+// [id:CS_CMD_ENTER_ROOM_RES ]
+message EnterRoomRes {
+    int32 ret_code = 1;
+    string ret_msg = 2;
+    int64 room_id = 3;
 }

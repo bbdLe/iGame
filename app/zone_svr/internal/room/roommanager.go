@@ -31,6 +31,11 @@ func (self *RoomManager) NewRoom() internal.CommRoom {
 	return r
 }
 
+func (self *RoomManager) GetRoom(id int64) (internal.CommRoom, bool) {
+	r, ok := self.RoomMap[id]
+	return r, ok
+}
+
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
 		RoomMap: make(map[int64]*Room),

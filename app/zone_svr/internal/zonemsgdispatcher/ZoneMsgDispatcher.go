@@ -1,4 +1,4 @@
-package ZoneMsgDispatcher
+package zonemsgdispatcher
 
 import (
 	"github.com/bbdLe/iGame/app/zone_svr/internal"

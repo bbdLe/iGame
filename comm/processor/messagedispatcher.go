@@ -3,7 +3,6 @@ package processor
 import (
 	"fmt"
 	"github.com/bbdLe/iGame/comm"
-	"github.com/bbdLe/iGame/comm/log"
 	"reflect"
 	"sync"
 )
@@ -25,7 +24,7 @@ func (self *MessageDispatcher) OnEvent(ev Event) {
 	self.handlerGuard.RUnlock()
 
 	if !ok {
-		log.Logger.Error(fmt.Sprintf("MsgType %s  logic not exist, use default logic", pt.String()))
+		//log.Logger.Error(fmt.Sprintf("MsgType %s  logic not exist, use default logic", pt.String()))
 		if self.defaultCallback != nil {
 			self.defaultCallback(ev)
 		}

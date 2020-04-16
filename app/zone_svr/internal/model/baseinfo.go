@@ -1,10 +1,7 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/bbdLe/iGame/app/zone_svr/internal"
-	"github.com/bbdLe/iGame/comm/log"
 )
 
 type PlayerBaseInfo struct {
@@ -12,6 +9,7 @@ type PlayerBaseInfo struct {
 
 	level int
 	exp int64
+	name string
 }
 
 func (self *PlayerBaseInfo) Init(p *Player) {
@@ -19,7 +17,6 @@ func (self *PlayerBaseInfo) Init(p *Player) {
 }
 
 func (self *PlayerBaseInfo) Tick() {
-	log.Logger.Debug(fmt.Sprintf("Now Exp : %d", self.exp))
 }
 
 func (self *PlayerBaseInfo) Level() int {
@@ -36,4 +33,12 @@ func (self *PlayerBaseInfo) AddExp(exp int64) {
 
 func (self *PlayerBaseInfo) Player() internal.CommPlayer {
 	return self.player
+}
+
+func (self *PlayerBaseInfo) SetName(n string) {
+	self.name = n
+}
+
+func (self *PlayerBaseInfo) Name() string {
+	return self.name
 }

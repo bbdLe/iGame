@@ -64,6 +64,10 @@ func (self *Player) ID() int64 {
 	return self.SessionID
 }
 
+func (self *Player) Name() string {
+	return self.baseInfo.Name()
+}
+
 func (self *Player) Room() internal.CommRoom {
 	return self.room
 }
@@ -76,6 +80,14 @@ func (self *Player) OnLogout() {
 	if self.Room() != nil {
 		self.Room().RemovePlayer(self)
 	}
+}
+
+func (self *Player) OnLogin() {
+	self.baseInfo.SetName(fmt.Sprintf("player_%d", self.ID()))
+}
+
+func (self *Player) Send(msg interface{}) {
+	internal.Send2Player(self, msg)
 }
 
 func (self *Player) BaseInfo() internal.CommPlayerBaseInfo {

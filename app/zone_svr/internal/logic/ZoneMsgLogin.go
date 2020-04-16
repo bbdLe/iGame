@@ -31,6 +31,7 @@ func ZoneMsgLogin(player internal.CommPlayer, ev processor.Event) {
 	// 新建玩家
 	player = model.NewPlayer(clientID, ev.Session())
 	internal.GameMgr.SetPlayer(clientID, player)
+	player.OnLogin()
 
 	internal.Send2Player(player, &proto.LoginRes{
 		RetCode: 0,
@@ -44,7 +45,6 @@ func ZoneMsgHeartBeat(player internal.CommPlayer, ev processor.Event) {
 		log.Logger.Error("player not exist")
 		return
 	}
-
 
 	player.SetHeartBeat(time.Now())
 	// 回包
