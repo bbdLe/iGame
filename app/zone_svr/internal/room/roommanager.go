@@ -50,7 +50,7 @@ func (self *RoomManager) GetRoom(id int64) (internal.Room, bool) {
 }
 
 func (self *RoomManager) FreeRoom(id int64) {
-	log.Logger.Debug(fmt.Sprintf("free room : %v", id))
+	log.Logger.Debug(fmt.Sprintf("free room[%d]", id))
 	delete(self.RoomMap, id)
 }
 
