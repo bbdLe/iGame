@@ -1,6 +1,8 @@
 package client
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/bbdLe/iGame/app/client/handler"
 	"github.com/bbdLe/iGame/comm"
 	"github.com/bbdLe/iGame/comm/log"
@@ -8,6 +10,9 @@ import (
 	"github.com/bbdLe/iGame/comm/processor"
 	"github.com/bbdLe/iGame/comm/sysmsg"
 	"github.com/bbdLe/iGame/proto"
+	"os"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -51,11 +56,44 @@ func connectConn(addr string, token string) error {
 		}
 	}()
 
-	select {
-
-	}
+	readFromConsole(p)
 
 	return nil
+}
+
+func readFromConsole(p comm.Peer) {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		gm, err := reader.ReadString('\n')
+		if err != nil {
+			log.Logger.Debug("???")
+			break
+		}
+
+		gm = strings.TrimRight(gm, "\n\r")
+
+		gmList := strings.Split(gm, " ")
+		if gmList[0] == "move" {
+			x, err := strconv.ParseInt(gmList[1], 10, 64)
+			if err != nil {
+				log.Logger.Debug("???")
+				continue
+			}
+
+			y, err := strconv.ParseInt(gmList[2], 10, 64)
+			if err != nil {
+				log.Logger.Debug(fmt.Sprintf("%v", err))
+				continue
+			}
+
+			p.(interface{ Session() comm.Session}).Session().Send(&proto.MovePosReq{
+				Pos:  &proto.Pos{
+					X: x,
+					Y: y,
+				},
+			})
+		}
+	}
 }
 
 func Run() {

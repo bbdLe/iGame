@@ -46,5 +46,6 @@ func NewGrid(gid, minx, maxx, miny, maxy int64) *Grid {
 		MaxX: maxx,
 		MinY: miny,
 		MaxY: maxy,
+		EntityMap: make(map[internal.Entity]struct{}),
 	}
 }

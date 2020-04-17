@@ -14,6 +14,7 @@ func ZoneMsgCreateRoom(player internal.Player, ev processor.Event) {
 	}
 
 	r := internal.RoomMgr.NewRoom()
+	r.SetCanFree(true)
 	r.AddPlayer(player)
 
 	reply := &proto.CreateRoomRes{}
@@ -25,6 +26,10 @@ func ZoneMsgEnterRoom(player internal.Player, ev processor.Event) {
 	if player == nil {
 		log.Logger.Error("player not exist")
 		return
+	}
+
+	if player.Room() != nil {
+
 	}
 
 	msg := ev.Message().(*proto.EnterRoomReq)
@@ -40,5 +45,18 @@ func ZoneMsgEnterRoom(player internal.Player, ev processor.Event) {
 	reply.RoomId = msg.GetRoomId()
 
 	room.AddPlayer(player)
+	player.Send(reply)
+}
+
+func ZoneMsgMove(player internal.Player, ev processor.Event) {
+	if player == nil {
+		log.Logger.Error("player not exist")
+		return
+	}
+
+	msg := ev.Message().(*proto.MovePosReq)
+	player.Room().OnPlayerMove(player, msg.GetPos().GetX(), msg.GetPos().GetY())
+
+	reply := &proto.MovePosRes{}
 	player.Send(reply)
 }

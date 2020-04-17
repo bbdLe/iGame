@@ -108,6 +108,15 @@ func (self *FrontEndManager) Kick(sessionID int64) {
 	})
 }
 
+func (self *FrontEndManager) KickAll() {
+	self.Post(func() {
+		for _, ses := range self.sessionMap{
+			ses.Close()
+			self.DelSession(ses)
+		}
+	})
+}
+
 func (self *FrontEndManager) tick() {
 	for {
 		self.Post(func() {

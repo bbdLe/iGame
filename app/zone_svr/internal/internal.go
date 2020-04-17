@@ -24,17 +24,18 @@ const (
 
 type Entity interface {
 	ID() int64
-
 	Name() string
-
 	Type() EntityType
+	Pos() *proto.Pos
+
+	EnterView(Entity)
+	LeaveView(Entity)
+	SendPos(Entity)
 }
 
 type Player interface {
 	Init()
-
 	Tick()
-
 	Session() comm.Session
 
 	ID() int64
@@ -53,6 +54,10 @@ type Player interface {
 	BaseInfo() PlayerBaseInfo
 
 	Send(interface{})
+
+	EnterView(Entity)
+	LeaveView(Entity)
+	SendPos(Entity)
 }
 
 
@@ -79,6 +84,10 @@ type Room interface {
 	RemovePlayer(Player)
 
 	Broadcast(interface{})
+
+	OnPlayerMove(p Player, x, y int64)
+
+	SetCanFree(bool)
 }
 
 type RoomManager interface {
@@ -92,6 +101,7 @@ type RoomManager interface {
 type Pos interface {
 	X() int64
 	Y() int64
+	Set(x, y int64)
 }
 
 type PlayerBaseInfo interface {

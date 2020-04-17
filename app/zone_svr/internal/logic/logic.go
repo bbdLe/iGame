@@ -15,4 +15,5 @@ func init() {
 	MsgDispatcher.Register(int16(proto.ProtoID_CS_CMD_HEART_BETA_REQ), ZoneMsgHeartBeat)
 	MsgDispatcher.Register(int16(proto.ProtoID_CS_CMD_CREATE_ROOM_REQ), ZoneMsgCreateRoom)
 	MsgDispatcher.Register(int16(proto.ProtoID_CS_CMD_ENTER_ROOM_REQ), ZoneMsgEnterRoom)
+	MsgDispatcher.Register(int16(proto.ProtoID_CS_CMD_MOVE_POS_REQ), ZoneMsgMove)
 }

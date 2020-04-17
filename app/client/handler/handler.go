@@ -21,6 +21,9 @@ func init() {
 	MsgDispatcher.RegisterMessage("CreateRoomRes", ZoneCreateRoomRes)
 	MsgDispatcher.RegisterMessage("BroadcastMsgRes", ZoneBroadcastMsgRes)
 	MsgDispatcher.RegisterMessage("EnterRoomRes", ZoneMsgEnterRoom)
+	MsgDispatcher.RegisterMessage("EnterViewReq", ZoneMsgEnterView)
+	MsgDispatcher.RegisterMessage("LeaveViewReq", ZoneMsgLeaveView)
+	MsgDispatcher.RegisterMessage("PosChangeReq", ZoneMsgChangePos)
 }
 
 func ZoneVerifyRes(ev processor.Event) {
@@ -87,4 +90,24 @@ func ZoneMsgEnterRoom(ev processor.Event) {
 
 func ZoneHeartBeatRes(ev processor.Event) {
 	// pass
+}
+
+func ZoneMsgEnterView(ev processor.Event) {
+	msg := ev.Message().(*proto.EnterViewReq)
+
+	log.Logger.Debug(fmt.Sprintf("entity[%d] type[%d] 进入视野, 位置[%d:%d]", msg.GetEntityId(),
+		msg.GetEntityType(), msg.GetPos().GetX(), msg.GetPos().GetY()))
+}
+
+func ZoneMsgLeaveView(ev processor.Event) {
+	msg := ev.Message().(*proto.LeaveViewReq)
+
+	log.Logger.Debug(fmt.Sprintf("entity[%d] type[] 离开视野", msg.GetEntityId()))
+}
+
+func ZoneMsgChangePos(ev processor.Event) {
+	msg := ev.Message().(*proto.PosChangeReq)
+
+	log.Logger.Debug(fmt.Sprintf("entity[%d] 移动了, 位置[%d:%d]", msg.GetEntityId(),
+		msg.GetPos().GetX(), msg.GetPos().GetY()))
 }

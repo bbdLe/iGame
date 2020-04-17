@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/bbdLe/iGame/app/zone_svr/internal"
+	"github.com/bbdLe/iGame/proto"
 	"time"
 
 	"github.com/bbdLe/iGame/comm"
@@ -96,6 +97,56 @@ func (self *PlayerImpl) Send(msg interface{}) {
 
 func (self *PlayerImpl) BaseInfo() internal.PlayerBaseInfo {
 	return &self.baseInfo
+}
+
+func (self *PlayerImpl) EnterView(entity internal.Entity) {
+	self.Send(&proto.EnterViewReq{
+		EntityId:  entity.ID(),
+		EntityType: int32(entity.Type()),
+		Pos: entity.Pos(),
+	})
+}
+
+func (self *PlayerImpl) Pos() *proto.Pos {
+	return &proto.Pos{
+		X: self.baseInfo.Pos().X(),
+		Y: self.baseInfo.Pos().Y(),
+	}
+}
+
+func (self *PlayerImpl) LeaveView(entity internal.Entity) {
+	self.Send(&proto.LeaveViewReq{
+		EntityId: entity.ID(),
+		EntityType: int32(entity.ID()),
+	})
+}
+
+func (self *PlayerImpl) SendPos(entity internal.Entity) {
+	log.Logger.Debug("send pos")
+	self.Send(&proto.PosChangeReq{
+		Pos: entity.Pos(),
+		EntityId : entity.ID(),
+		EntityType: int32(entity.Type()),
+	})
+}
+
+func (self *PlayerImpl) EnterRoom(roomId int64) int64 {
+	self.LeaveRoom()
+
+	room, ok := internal.RoomMgr.GetRoom(roomId)
+	if !ok {
+		return -1
+	}
+
+	room.AddPlayer(self)
+	return 0
+}
+
+func (self *PlayerImpl) LeaveRoom() {
+	if self.Room() != nil {
+		self.Room().RemovePlayer(self)
+		self.SetRoom(nil)
+	}
 }
 
 func NewPlayer(sessionID int64, ses comm.Session) *PlayerImpl {

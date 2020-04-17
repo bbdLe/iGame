@@ -30,4 +30,6 @@ type FrontendManager interface {
 	DelSession(comm.Session)
 
 	Kick(int64)
+
+	KickAll()
 }

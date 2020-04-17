@@ -17,6 +17,11 @@ func (self *PosImpl) Y() int64 {
 	return self.y
 }
 
+func (self *PosImpl) Set(x, y int64) {
+	self.x = x
+	self.y = y
+}
+
 type PlayerBaseInfoImpl struct {
 	player *PlayerImpl
 

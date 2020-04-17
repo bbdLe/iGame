@@ -48,6 +48,7 @@ func (self *BackendManagerImpl) Start() {
 			wg.Done()
 		case *sysmsg.SessionClose:
 			log.Logger.Debug("disconnect")
+			logic.FrontEndMgr.KickAll()
 			wg.Add(1)
 		default:
 			msgDispatcher.OnEvent(ev)

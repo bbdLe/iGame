@@ -34,6 +34,18 @@ enum ProtoID
 
     CS_CMD_ENTER_ROOM_REQ = 19;
     CS_CMD_ENTER_ROOM_RES = 20;
+
+    CS_CMD_MOVE_POS_REQ = 21;
+    CS_CMD_MOVE_POS_RES = 22;
+
+    CS_CMD_ENTER_VIEW_REQ = 23;
+    CS_CMD_ENTER_VIEW_RES = 24;
+
+    CS_CMD_LEAVE_VIEW_REQ = 25;
+    CS_CMD_LEAVE_VIEW_RES = 26;
+
+    CS_CMD_POS_CHANGE_REQ = 27;
+    CS_CMD_POS_CHANGE_RES = 28;
 }
 
 enum MSG
@@ -162,4 +174,59 @@ message EnterRoomRes {
     int32 ret_code = 1;
     string ret_msg = 2;
     int64 room_id = 3;
+}
+
+message Pos {
+    int64 x = 1;
+    int64 y = 2;
+}
+
+// [id:CS_CMD_MOVE_POS_REQ ]
+message MovePosReq {
+    Pos pos = 1;
+}
+
+// [id:CS_CMD_MOVE_POS_RES ]
+message MovePosRes {
+    int32 ret_code = 1;
+    string ret_msg = 2;
+    Pos pos = 3;
+}
+
+// [id:CS_CMD_ENTER_VIEW_REQ ]
+message EnterViewReq {
+    int64 entity_id = 1;
+    int32 entity_type = 2;
+    Pos pos = 3;
+}
+
+// [id:CS_CMD_ENTER_VIEW_RES ]
+message EnterViewRes {
+    int64 ret_code = 1;
+    string ret_msg = 2;
+}
+
+// [id:CS_CMD_LEAVE_VIEW_REQ ]
+message LeaveViewReq {
+    int64 entity_id = 1;
+    int32 entity_type = 2;
+}
+
+// [id:CS_CMD_LEAVE_VIEW_RES ]
+message LeaveViewRes {
+    int64 ret_code = 1;
+    string ret_msg = 2;
+}
+
+// [id:CS_CMD_POS_CHANGE_REQ]
+message PosChangeReq {
+    int64 entity_id = 1;
+    int32 entity_type = 2;
+    Pos pos = 3;
+}
+
+// [id:CS_CMD_POS_CHANGE_RES]
+message PosChangeRes {
+    int64 ret_code = 1;
+    string ret_msg = 2;
 }
