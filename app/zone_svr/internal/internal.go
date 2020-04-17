@@ -15,6 +15,21 @@ var (
 	RoomMgr RoomManager
 )
 
+type EntityType int
+
+const (
+	PlayerType EntityType = iota
+	MonsterType
+)
+
+type Entity interface {
+	ID() int64
+
+	Name() string
+
+	Type() EntityType
+}
+
 type Player interface {
 	Init()
 
@@ -24,6 +39,7 @@ type Player interface {
 
 	ID() int64
 	Name() string
+	Type() EntityType
 
 	OnLogout()
 	OnLogin()
@@ -73,6 +89,11 @@ type RoomManager interface {
 	GetRoom(int64) (Room, bool)
 }
 
+type Pos interface {
+	X() int64
+	Y() int64
+}
+
 type PlayerBaseInfo interface {
 	Exp() int64
 
@@ -81,6 +102,8 @@ type PlayerBaseInfo interface {
 	AddExp(int64)
 
 	Player() Player
+
+	Pos() Pos
 }
 
 func Send2Player(player Player, msg interface{}) {

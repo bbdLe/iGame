@@ -9,6 +9,7 @@ import (
 )
 
 type RoomImpl struct {
+	AoiManager
 	Id int64
 
 	playerMap map[int64]internal.Player
@@ -38,6 +39,7 @@ func (self *RoomImpl) RemovePlayer(p internal.Player) {
 
 	p.SetRoom(nil)
 	delete(self.playerMap, p.ID())
+	self.OnPlayerLeave(p)
 }
 
 func (self *RoomImpl) VisitPlayer(f func(p internal.Player)) {

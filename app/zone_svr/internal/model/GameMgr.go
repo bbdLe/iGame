@@ -75,9 +75,10 @@ func (self *GameManagerImpl) KickPlayer(p internal.Player) {
 }
 
 func (self *GameManagerImpl) OnPlayerLogin(p internal.Player) {
+	name := p.Name()
 	self.VisitPlayer(func(p internal.Player) {
 		p.Send(&proto.BroadcastMsgRes{
-			Msg:  fmt.Sprintf("欢迎%s登陆游戏", p.Name()),
+			Msg:  fmt.Sprintf("欢迎%s登陆游戏", name),
 			Type: proto.MSG_TYPE_SYSTEM,
 		})
 	})

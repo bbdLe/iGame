@@ -68,6 +68,10 @@ func (self *PlayerImpl) Name() string {
 	return self.baseInfo.Name()
 }
 
+func (self *PlayerImpl) Type() internal.EntityType {
+	return internal.PlayerType
+}
+
 func (self *PlayerImpl) Room() internal.Room {
 	return self.room
 }
