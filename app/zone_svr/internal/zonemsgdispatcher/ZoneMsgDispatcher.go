@@ -12,7 +12,7 @@ type ZoneMsgDispatcher struct {
 	handlerGuard sync.Mutex
 }
 
-type MsgCallBack func(player internal.CommPlayer, ev processor.Event)
+type MsgCallBack func(player internal.Player, ev processor.Event)
 
 func (self *ZoneMsgDispatcher) Register(msgID int16, cb MsgCallBack) {
 	self.handlerGuard.Lock()
@@ -20,7 +20,7 @@ func (self *ZoneMsgDispatcher) Register(msgID int16, cb MsgCallBack) {
 	self.handlerByID[msgID] = cb
 }
 
-func (self *ZoneMsgDispatcher) OnEvent(player internal.CommPlayer, ev processor.Event) {
+func (self *ZoneMsgDispatcher) OnEvent(player internal.Player, ev processor.Event) {
 	meta := comm.MessageMetaByMsg(ev.Message())
 	if meta == nil {
 		return

@@ -7,7 +7,7 @@ import (
 	"github.com/bbdLe/iGame/proto"
 )
 
-func ZoneMsgCreateRoom(player internal.CommPlayer, ev processor.Event) {
+func ZoneMsgCreateRoom(player internal.Player, ev processor.Event) {
 	if player == nil {
 		log.Logger.Error("player not exist")
 		return
@@ -21,7 +21,7 @@ func ZoneMsgCreateRoom(player internal.CommPlayer, ev processor.Event) {
 	player.Send(reply)
 }
 
-func ZoneMsgEnterRoom(player internal.CommPlayer, ev processor.Event) {
+func ZoneMsgEnterRoom(player internal.Player, ev processor.Event) {
 	if player == nil {
 		log.Logger.Error("player not exist")
 		return
@@ -37,6 +37,7 @@ func ZoneMsgEnterRoom(player internal.CommPlayer, ev processor.Event) {
 		player.Send(reply)
 		return
 	}
+	reply.RoomId = msg.GetRoomId()
 
 	room.AddPlayer(player)
 	player.Send(reply)

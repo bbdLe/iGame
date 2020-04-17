@@ -8,27 +8,24 @@ import (
 	"github.com/bbdLe/iGame/comm/log"
 )
 
-type Room struct {
+type RoomImpl struct {
 	Id int64
 
-	playerMap map[int64]internal.CommPlayer
+	playerMap map[int64]internal.Player
 }
 
-func (self *Room) ID() int64 {
+func (self *RoomImpl) ID() int64 {
 	return self.Id
 }
 
-func (self *Room) SetID(id int64) {
+func (self *RoomImpl) SetID(id int64) {
 	self.Id = id
 }
 
-func (self *Room) Tick() {
-	for _, p := range self.playerMap {
-		p.BaseInfo().AddExp(10)
-	}
+func (self *RoomImpl) Tick() {
 }
 
-func (self *Room) AddPlayer(p internal.CommPlayer) {
+func (self *RoomImpl) AddPlayer(p internal.Player) {
 	log.Logger.Info(fmt.Sprintf("player[%d] enter room[%d]", p.ID(), self.ID()))
 
 	self.playerMap[p.ID()] = p
@@ -36,36 +33,43 @@ func (self *Room) AddPlayer(p internal.CommPlayer) {
 	self.OnPlayerEnter(p)
 }
 
-func (self *Room) RemovePlayer(p internal.CommPlayer) {
+func (self *RoomImpl) RemovePlayer(p internal.Player) {
 	log.Logger.Info(fmt.Sprintf("player[%d] leave room[%d]", p.ID(), self.ID()))
 
 	p.SetRoom(nil)
 	delete(self.playerMap, p.ID())
 }
 
-func (self *Room) VisitPlayer(f func(p internal.CommPlayer)) {
+func (self *RoomImpl) VisitPlayer(f func(p internal.Player)) {
 	for _, p := range self.playerMap {
 		f(p)
 	}
 }
 
-func (self *Room) Broadcast(msg interface{}) {
+func (self *RoomImpl) Broadcast(msg interface{}) {
 	log.Logger.Debug("broadcast")
-	self.VisitPlayer(func(p internal.CommPlayer) {
+	self.VisitPlayer(func(p internal.Player) {
 		p.Send(msg)
 	})
 }
 
-func (self *Room) OnPlayerEnter(p internal.CommPlayer) {
+func (self *RoomImpl) OnPlayerEnter(p internal.Player) {
 	var msg proto.BroadcastMsgRes
-	msg.Msg = fmt.Sprintf("欢迎%s进入游戏", p.Name())
+	msg.Msg = fmt.Sprintf("欢迎%s进入房间", p.Name())
 	msg.Type = proto.MSG_TYPE_SYSTEM
 	self.Broadcast(&msg)
 }
 
-func NewRoom(id int64) *Room {
-	return &Room{
+func (self *RoomImpl) OnPlayerLeave(p internal.Player) {
+	var msg proto.BroadcastMsgRes
+	msg.Msg = fmt.Sprintf("玩家%s离开了房间", p.Name())
+	msg.Type = proto.MSG_TYPE_SYSTEM
+	self.Broadcast(&msg)
+}
+
+func NewRoom(id int64) *RoomImpl {
+	return &RoomImpl{
 		Id : id,
-		playerMap : make(map[int64]internal.CommPlayer),
+		playerMap : make(map[int64]internal.Player),
 	}
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/bbdLe/iGame/comm/processor"
 )
 
-func ZoneMsgLogin(player internal.CommPlayer, ev processor.Event) {
+func ZoneMsgLogin(player internal.Player, ev processor.Event) {
 	v, ok := ev.Session().(comm.ContextSet).GetContext("clientID")
 	if !ok {
 		log.Logger.Error("Get ClientID fail")
@@ -31,7 +31,10 @@ func ZoneMsgLogin(player internal.CommPlayer, ev processor.Event) {
 	// 新建玩家
 	player = model.NewPlayer(clientID, ev.Session())
 	internal.GameMgr.SetPlayer(clientID, player)
+
+	// 回调
 	player.OnLogin()
+	internal.GameMgr.OnPlayerLogin(player)
 
 	internal.Send2Player(player, &proto.LoginRes{
 		RetCode: 0,
@@ -39,7 +42,7 @@ func ZoneMsgLogin(player internal.CommPlayer, ev processor.Event) {
 	})
 }
 
-func ZoneMsgHeartBeat(player internal.CommPlayer, ev processor.Event) {
+func ZoneMsgHeartBeat(player internal.Player, ev processor.Event) {
 	if player == nil {
 		// todo 踢掉session
 		log.Logger.Error("player not exist")

@@ -15,7 +15,7 @@ var (
 	RoomMgr RoomManager
 )
 
-type CommPlayer interface {
+type Player interface {
 	Init()
 
 	Tick()
@@ -31,10 +31,10 @@ type CommPlayer interface {
 	SetHeartBeat(time.Time)
 	HeartBeat() time.Time
 
-	Room() CommRoom
-	SetRoom(CommRoom)
+	Room() Room
+	SetRoom(Room)
 
-	BaseInfo() CommPlayerBaseInfo
+	BaseInfo() PlayerBaseInfo
 
 	Send(interface{})
 }
@@ -43,25 +43,24 @@ type CommPlayer interface {
 type GameManager interface{
 	Start()
 
-	KickPlayer(CommPlayer)
-
-	SetPlayer(int64, CommPlayer)
-
-	GetPlayer(int64) (CommPlayer, bool)
-
+	KickPlayer(Player)
+	SetPlayer(int64, Player)
+	GetPlayer(int64) (Player, bool)
 	DelPlayer(int64)
 
-	VisitPlayer(func(CommPlayer))
+	VisitPlayer(func(Player))
+
+	OnPlayerLogin(Player)
 }
 
-type CommRoom interface {
+type Room interface {
 	ID() int64
 
 	SetID(int64)
 
-	AddPlayer(CommPlayer)
+	AddPlayer(Player)
 
-	RemovePlayer(CommPlayer)
+	RemovePlayer(Player)
 
 	Broadcast(interface{})
 }
@@ -69,22 +68,22 @@ type CommRoom interface {
 type RoomManager interface {
 	Tick()
 
-	NewRoom() CommRoom
+	NewRoom() Room
 
-	GetRoom(int64) (CommRoom, bool)
+	GetRoom(int64) (Room, bool)
 }
 
-type CommPlayerBaseInfo interface {
+type PlayerBaseInfo interface {
 	Exp() int64
 
 	Level() int
 
 	AddExp(int64)
 
-	Player() CommPlayer
+	Player() Player
 }
 
-func Send2Player(player CommPlayer, msg interface{}) {
+func Send2Player(player Player, msg interface{}) {
 	meta := comm.MessageMetaByMsg(msg)
 	if meta == nil {
 		log.Logger.Error("get meta fail")

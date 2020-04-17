@@ -5,6 +5,8 @@ import (
 	"github.com/bbdLe/iGame/comm/log"
 	"github.com/bbdLe/iGame/comm/processor"
 	"github.com/bbdLe/iGame/proto"
+	"os"
+	"strconv"
 )
 
 var (
@@ -18,6 +20,7 @@ func init() {
 	MsgDispatcher.RegisterMessage("HeartBeatRes", ZoneHeartBeatRes)
 	MsgDispatcher.RegisterMessage("CreateRoomRes", ZoneCreateRoomRes)
 	MsgDispatcher.RegisterMessage("BroadcastMsgRes", ZoneBroadcastMsgRes)
+	MsgDispatcher.RegisterMessage("EnterRoomRes", ZoneMsgEnterRoom)
 }
 
 func ZoneVerifyRes(ev processor.Event) {
@@ -39,11 +42,23 @@ func ZoneLoginRes(ev processor.Event) {
 	log.Logger.Debug(fmt.Sprintf("%v", msg))
 
 	// 进入房间
-	ev.Session().Send(&proto.CreateRoomReq{})
+	if len(os.Args) > 1 {
+		roomid, err := strconv.ParseInt(os.Args[1], 10, 64)
+		if err != nil {
+			log.Logger.Debug("parse int fail")
+			return
+		}
+
+		ev.Session().Send(&proto.EnterRoomReq{
+			RoomId: roomid,
+		})
+	} else {
+		ev.Session().Send(&proto.CreateRoomReq{})
+	}
 }
 
 func ZoneCreateRoomRes(ev processor.Event) {
-	log.Logger.Debug(fmt.Sprint("player enter room[%d]", ev.Message().(*proto.CreateRoomRes).GetRoomId()))
+	log.Logger.Debug(fmt.Sprintf("你已进入房间[%d]", ev.Message().(*proto.CreateRoomRes).GetRoomId()))
 }
 
 func ZoneBroadcastMsgRes(ev processor.Event) {
@@ -58,6 +73,16 @@ func ZoneBroadcastMsgRes(ev processor.Event) {
 
 	content += msg.GetMsg()
 	log.Logger.Info(content)
+}
+
+func ZoneMsgEnterRoom(ev processor.Event) {
+	msg := ev.Message().(*proto.EnterRoomRes)
+
+	if msg.GetRetCode() != 0 {
+		log.Logger.Debug(fmt.Sprintf("进入房间失败: %v", msg.GetRetMsg()))
+	} else {
+		log.Logger.Debug(fmt.Sprintf("你已经进入%d号房间", msg.GetRoomId()))
+	}
 }
 
 func ZoneHeartBeatRes(ev processor.Event) {

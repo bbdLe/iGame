@@ -4,41 +4,41 @@ import (
 	"github.com/bbdLe/iGame/app/zone_svr/internal"
 )
 
-type PlayerBaseInfo struct {
-	player *Player
+type PlayerBaseInfoImpl struct {
+	player *PlayerImpl
 
 	level int
 	exp int64
 	name string
 }
 
-func (self *PlayerBaseInfo) Init(p *Player) {
+func (self *PlayerBaseInfoImpl) Init(p *PlayerImpl) {
 	self.player = p
 }
 
-func (self *PlayerBaseInfo) Tick() {
+func (self *PlayerBaseInfoImpl) Tick() {
 }
 
-func (self *PlayerBaseInfo) Level() int {
+func (self *PlayerBaseInfoImpl) Level() int {
 	return self.level
 }
 
-func (self *PlayerBaseInfo) Exp() int64 {
+func (self *PlayerBaseInfoImpl) Exp() int64 {
 	return self.exp
 }
 
-func (self *PlayerBaseInfo) AddExp(exp int64) {
+func (self *PlayerBaseInfoImpl) AddExp(exp int64) {
 	self.exp += exp
 }
 
-func (self *PlayerBaseInfo) Player() internal.CommPlayer {
+func (self *PlayerBaseInfoImpl) Player() internal.Player {
 	return self.player
 }
 
-func (self *PlayerBaseInfo) SetName(n string) {
+func (self *PlayerBaseInfoImpl) SetName(n string) {
 	self.name = n
 }
 
-func (self *PlayerBaseInfo) Name() string {
+func (self *PlayerBaseInfoImpl) Name() string {
 	return self.name
 }

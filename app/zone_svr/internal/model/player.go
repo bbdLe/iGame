@@ -12,32 +12,32 @@ import (
 type PlayerCmpt interface {
 	Tick()
 
-	Init(*Player)
+	Init(*PlayerImpl)
 }
 
-type Player struct {
+type PlayerImpl struct {
 	Ses comm.Session
 	SessionID int64
 
-	Cmpts []PlayerCmpt
-	baseInfo PlayerBaseInfo
+	Cmpts    []PlayerCmpt
+	baseInfo PlayerBaseInfoImpl
 
-	room internal.CommRoom
+	room internal.Room
 
 	HeartBeatTime time.Time
 	Status int32
 }
 
-func (self *Player) RegCmpt(m PlayerCmpt) {
+func (self *PlayerImpl) RegCmpt(m PlayerCmpt) {
 	m.Init(self)
 	self.Cmpts = append(self.Cmpts, m)
 }
 
-func (self *Player) Init() {
+func (self *PlayerImpl) Init() {
 	self.RegCmpt(&self.baseInfo)
 }
 
-func (self *Player) Tick() {
+func (self *PlayerImpl) Tick() {
 	for _, cmpt := range self.Cmpts {
 		cmpt.Tick()
 	}
@@ -48,54 +48,54 @@ func (self *Player) Tick() {
 	}
 }
 
-func (self *Player) SetHeartBeat(t time.Time) {
+func (self *PlayerImpl) SetHeartBeat(t time.Time) {
 	self.HeartBeatTime = t
 }
 
-func (self *Player) HeartBeat() time.Time {
+func (self *PlayerImpl) HeartBeat() time.Time {
 	return self.HeartBeatTime
 }
 
-func (self *Player) Session() comm.Session {
+func (self *PlayerImpl) Session() comm.Session {
 	return self.Ses
 }
 
-func (self *Player) ID() int64 {
+func (self *PlayerImpl) ID() int64 {
 	return self.SessionID
 }
 
-func (self *Player) Name() string {
+func (self *PlayerImpl) Name() string {
 	return self.baseInfo.Name()
 }
 
-func (self *Player) Room() internal.CommRoom {
+func (self *PlayerImpl) Room() internal.Room {
 	return self.room
 }
 
-func (self *Player) SetRoom(room internal.CommRoom) {
+func (self *PlayerImpl) SetRoom(room internal.Room) {
 	self.room = room
 }
 
-func (self *Player) OnLogout() {
+func (self *PlayerImpl) OnLogout() {
 	if self.Room() != nil {
 		self.Room().RemovePlayer(self)
 	}
 }
 
-func (self *Player) OnLogin() {
+func (self *PlayerImpl) OnLogin() {
 	self.baseInfo.SetName(fmt.Sprintf("player_%d", self.ID()))
 }
 
-func (self *Player) Send(msg interface{}) {
+func (self *PlayerImpl) Send(msg interface{}) {
 	internal.Send2Player(self, msg)
 }
 
-func (self *Player) BaseInfo() internal.CommPlayerBaseInfo {
+func (self *PlayerImpl) BaseInfo() internal.PlayerBaseInfo {
 	return &self.baseInfo
 }
 
-func NewPlayer(sessionID int64, ses comm.Session) *Player {
-	self := &Player{
+func NewPlayer(sessionID int64, ses comm.Session) *PlayerImpl {
+	self := &PlayerImpl{
 		SessionID: sessionID,
 		Ses : ses,
 		HeartBeatTime: time.Now(),

@@ -7,7 +7,7 @@ import (
 )
 
 type RoomManager struct {
-	RoomMap map[int64]*Room
+	RoomMap map[int64]*RoomImpl
 	LastTickTime time.Time
 
 	BaseID int64
@@ -24,21 +24,21 @@ func (self *RoomManager) Tick() {
 	self.LastTickTime = time.Now()
 }
 
-func (self *RoomManager) NewRoom() internal.CommRoom {
+func (self *RoomManager) NewRoom() internal.Room {
 	id := atomic.AddInt64(&self.BaseID, 1)
 	r := NewRoom(id)
 	self.RoomMap[id] = r
 	return r
 }
 
-func (self *RoomManager) GetRoom(id int64) (internal.CommRoom, bool) {
+func (self *RoomManager) GetRoom(id int64) (internal.Room, bool) {
 	r, ok := self.RoomMap[id]
 	return r, ok
 }
 
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
-		RoomMap: make(map[int64]*Room),
+		RoomMap: make(map[int64]*RoomImpl),
 		LastTickTime: time.Now(),
 	}
 }
